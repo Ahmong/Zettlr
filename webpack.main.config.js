@@ -1,12 +1,11 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const path = require('path')
+const rules = require('./webpack.rules')
 
 module.exports = {
   // Main entry point: the file that runs in the main process
   entry: './source/main.ts',
-  module: {
-    rules: require('./webpack.rules')
-  },
+  module: { rules },
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
@@ -18,7 +17,7 @@ module.exports = {
         { from: 'static/csl-locales', to: 'assets/csl-locales' },
         { from: 'static/csl-styles', to: 'assets/csl-styles' },
         { from: 'static/defaults', to: 'assets/defaults' },
-        { from: 'static/export.tpl.htm', to: 'assets' },
+        // { from: 'static/export.tpl.htm', to: 'assets' }, // DEPRECATED
         { from: 'static/template.revealjs.htm', to: 'assets' },
         { from: 'static/revealjs-styles', to: 'assets/revealjs-styles' },
         { from: 'static/lua-filter', to: 'assets/lua-filter' },

@@ -414,7 +414,7 @@ export default function getMenu (
       submenu: [
         {
           id: 'menu.toggle_theme',
-          label: trans('menu.toggle_theme'),
+          label: trans('dialog.preferences.dark_mode'),
           accelerator: 'Cmd+Alt+L',
           type: 'checkbox',
           checked: global.config.get('darkMode'),
@@ -652,8 +652,6 @@ export default function getMenu (
             // Immediately open the window instead of first checking
             global.application.runCommand('open-update-window')
               .catch(e => global.log.error(String(e.message), e))
-
-            global.updates.check()
           }
         }
       ]

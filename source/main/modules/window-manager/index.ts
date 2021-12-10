@@ -37,6 +37,7 @@ import createPreferencesWindow from './create-preferences-window'
 import createAboutWindow from './create-about-window'
 import createTagManagerWindow from './create-tag-manager-window'
 import createAssetsWindow from './create-assets-window'
+import createProjectPropertiesWindow from './create-project-properties-window'
 import createPasteImageModal from './create-paste-image-modal'
 import createErrorModal from './create-error-modal'
 import shouldOverwriteFileDialog from './dialog/should-overwrite-file'
@@ -58,6 +59,7 @@ export default class WindowManager extends EventEmitter {
   private _logWindow: BrowserWindow|null
   private _statsWindow: BrowserWindow|null
   private _assetsWindow: BrowserWindow|null
+  private _projectProperties: BrowserWindow|null
   private _preferences: BrowserWindow|null
   private _aboutWindow: BrowserWindow|null
   private _tagManager: BrowserWindow|null
@@ -86,6 +88,7 @@ export default class WindowManager extends EventEmitter {
     this._logWindow = null
     this._statsWindow = null
     this._assetsWindow = null
+    this._projectProperties = null
     this._windowState = new Map()
     this._configFile = path.join(app.getPath('userData'), 'window_state.json')
     this._fileLock = false
@@ -168,7 +171,8 @@ export default class WindowManager extends EventEmitter {
           event.sender.selectAll()
           break
         case 'inspect-element':
-          event.sender.inspectElement(payload.x, payload.y)
+          console.log(payload)
+          event.sender.inspectElement(Math.round(payload.x), Math.round(payload.y))
           break
         case 'drag-start':
           app.getFileIcon(payload.filePath)
@@ -708,6 +712,29 @@ export default class WindowManager extends EventEmitter {
   }
 
   /**
+   * Opens the project properties window with the given directory
+   *
+   * @param   {string}  dirPath  The directory to load
+   */
+  showProjectPropertiesWindow (dirPath: string): void {
+    if (this._projectProperties === null) {
+      const conf = this._retrieveWindowPosition('print', null)
+      this._projectProperties = createProjectPropertiesWindow(conf, dirPath)
+      this._hookWindowResize(this._projectProperties, 'project-properties')
+
+      // Dereference the window as soon as it is closed
+      this._projectProperties.on('closed', () => {
+        this._projectProperties = null
+      })
+    } else {
+      // We do not re-open the window with a (possibly changed) directory
+      // because it might contain unsaved changes. The user has to manually
+      // close it.
+      this._makeVisible(this._projectProperties)
+    }
+  }
+
+  /**
    * Opens the updater window
    */
   showUpdateWindow (): void {
@@ -822,16 +849,22 @@ export default class WindowManager extends EventEmitter {
   /**
    * Allows the user to save a file.
    *
-   * @param   {string}                 filename  An initial filename to display
-   * @param   {BrowserWindow<string>}  win       The window to attach to
+   * @param   {string}              fileOrPathName   Either an absolute path (in
+   *                                                 which case the directory will
+   *                                                 be set as the starting
+   *                                                 directory) or just a filename,
+   *                                                 in which case the last known
+   *                                                 dialogPaths.askFileDialog path
+   *                                                 will be used.
+   * @param   {BrowserWindow|null}  win              The window to attach to
    *
-   * @return  {Promise<string|undefined>}        Resolves with a path or undefined
+   * @return  {Promise<string|undefined>}            Resolves with a path or undefined
    */
-  async saveFile (filename: string, win?: BrowserWindow|null): Promise<string|undefined> {
+  async saveFile (fileOrPathName: string, win?: BrowserWindow|null): Promise<string|undefined> {
     if (win != null) {
-      return await saveFileDialog(win, filename)
+      return await saveFileDialog(win, fileOrPathName)
     } else {
-      return await saveFileDialog(this._mainWindow, filename)
+      return await saveFileDialog(this._mainWindow, fileOrPathName)
     }
   }
 

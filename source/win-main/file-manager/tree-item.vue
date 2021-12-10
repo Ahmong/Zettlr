@@ -16,7 +16,8 @@
       v-bind:style="{
         'padding-left': `${depth * 15 + 10}px`
       }"
-      v-on:mousedown.stop="requestSelection"
+      v-on:click.stop="requestSelection"
+      v-on:auxclick.stop="requestSelection"
       v-on:dragover="acceptDrags"
       v-on:dragenter="enterDragging"
       v-on:dragleave="leaveDragging"
@@ -48,7 +49,7 @@
           v-bind:class="{
             'is-solid': [ 'disconnect', 'blocks-group' ].includes(primaryIcon)
           }"
-          v-on:mousedown.stop="handlePrimaryIconClick"
+          v-on:click.stop="handlePrimaryIconClick"
         ></clr-icon>
       </span>
       <span

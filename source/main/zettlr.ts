@@ -360,7 +360,18 @@ export default class Zettlr {
     await this._documentManager.init()
 
     // Finally, initiate a first check for updates
-    global.updates.check()
+    await global.updates.check()
+
+    if (global.updates.applicationUpdateAvailable()) {
+      const { tagName } = global.updates.getUpdateState()
+      global.log.info(`Update available: ${tagName}`)
+      global.notify.normal(trans('dialog.update.new_update_available', tagName), () => {
+        // The user has clicked the notification, so we can show the update window here
+        this._windowManager.showUpdateWindow()
+      })
+    } else {
+      global.notify.normal(trans('dialog.update.no_new_update'))
+    }
   }
 
   /**
@@ -481,6 +492,8 @@ export default class Zettlr {
       return true
     } else if (command === 'open-update-window') {
       this._windowManager.showUpdateWindow()
+    } else if (command === 'open-project-preferences') {
+      this._windowManager.showProjectPropertiesWindow(payload)
     } else {
       // ELSE: If the command has not yet been found, try to run one of the
       // bigger commands
@@ -807,8 +820,18 @@ export default class Zettlr {
     return await this._windowManager.askFile(filters, multiSel)
   }
 
-  async saveFile (filename: string = ''): Promise<string|undefined> {
-    return await this._windowManager.saveFile(filename)
+  /**
+   * Asks the user to provide a path to a new file. Takes a filename, in which
+   * case the dialog will start in the last known directory of this specific
+   * dialog, or a full absolute path, in which the dialog will start.
+   *
+   * @param   {string}              fileOrPathName   Either an absolute path or just a filename
+   * @param   {BrowserWindow|null}  win              The window to attach to
+   *
+   * @return  {Promise<string|undefined>}            Resolves with a path or undefined
+   */
+  async saveFile (fileOrPathName: string): Promise<string|undefined> {
+    return await this._windowManager.saveFile(fileOrPathName)
   }
 
   /**

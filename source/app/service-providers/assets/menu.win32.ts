@@ -401,7 +401,7 @@ export default function getMenu (
       submenu: [
         {
           id: 'menu.toggle_theme',
-          label: trans('menu.toggle_theme'),
+          label: trans('dialog.preferences.dark_mode'),
           accelerator: 'Ctrl+Alt+L',
           type: 'checkbox',
           checked: global.config.get('darkMode'),
@@ -630,15 +630,9 @@ export default function getMenu (
           id: 'menu.update',
           label: trans('menu.update'),
           click: function (menuitem, focusedWindow) {
-            if (global.updates.applicationUpdateAvailable()) {
-              // Immediately open the window instead of first checking
-              global.application.runCommand('open-update-window')
-                .catch(e => global.log.error(String(e.message), e))
-
-              return
-            }
-
-            global.updates.check()
+            // Immediately open the window instead of first checking
+            global.application.runCommand('open-update-window')
+              .catch(e => global.log.error(String(e.message), e))
           }
         }
       ]

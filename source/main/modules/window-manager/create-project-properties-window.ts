@@ -2,7 +2,7 @@
  * @ignore
  * BEGIN HEADER
  *
- * Contains:        createPasteImageModal function
+ * Contains:        createProjectPropertiesWindow function
  * CVM-Role:        Utility function
  * Maintainer:      Hendrik Erz
  * License:         GNU GPL v3
@@ -20,41 +20,47 @@ import {
 import attachLogger from './attach-logger'
 import preventNavigation from './prevent-navigation'
 import setWindowChrome from './set-window-chrome'
+import { WindowPosition } from './types'
 
 /**
- * Creates a BrowserWindow with print window configuration and loads the
- * corresponding renderer.
+ * Creates a BrowserWindow with project properties configuration
  *
- * @return  {BrowserWindow}           The loaded print window
+ * @param   {WindowPosition}  conf     The configuration to use
+ * @param   {string}          dirPath  The directory whose project properties to load
+ *
+ * @return  {BrowserWindow}            The loaded print window
  */
-export default function createPasteImageModal (win: BrowserWindow, startPath: string): BrowserWindow {
+export default function createProjectPropertiesWindow (conf: WindowPosition, dirPath: string): BrowserWindow {
   const winConf: BrowserWindowConstructorOptions = {
     acceptFirstMouse: true,
-    width: 700,
-    height: 600,
-    modal: true,
-    parent: win,
+    minWidth: 300,
+    minHeight: 200,
+    width: conf.width,
+    height: conf.height,
+    minimizable: false, // Disable the minimise button for this utility window
+    x: conf.x,
+    y: conf.y,
     show: false,
     fullscreenable: false,
     webPreferences: {
       contextIsolation: true,
-      preload: PASTE_IMAGE_PRELOAD_WEBPACK_ENTRY
+      preload: PROJECT_PROPERTIES_PRELOAD_WEBPACK_ENTRY
     }
   }
 
   // Set the correct window chrome
-  setWindowChrome(winConf, true)
+  setWindowChrome(winConf)
 
   const window = new BrowserWindow(winConf)
 
-  const effectiveUrl = new URL(PASTE_IMAGE_WEBPACK_ENTRY)
-  // Add the initial target path to the search params
-  effectiveUrl.searchParams.append('startPath', startPath)
+  const effectiveUrl = new URL(PROJECT_PROPERTIES_WEBPACK_ENTRY)
+  // Add the directory path to the search params
+  effectiveUrl.searchParams.append('directory', dirPath)
 
   // Load the index.html of the app.
   window.loadURL(effectiveUrl.toString())
     .catch(e => {
-      global.log.error(`Could not load URL ${PASTE_IMAGE_WEBPACK_ENTRY}: ${e.message as string}`, e)
+      global.log.error(`Could not load URL ${PROJECT_PROPERTIES_WEBPACK_ENTRY}: ${e.message as string}`, e)
     })
 
   // EVENT LISTENERS
@@ -63,7 +69,7 @@ export default function createPasteImageModal (win: BrowserWindow, startPath: st
   preventNavigation(window)
 
   // Implement main process logging
-  attachLogger(window, 'Paste Image Modal')
+  attachLogger(window, 'Project Properties')
 
   // Only show window once it is completely initialized + maximize it
   window.once('ready-to-show', function () {

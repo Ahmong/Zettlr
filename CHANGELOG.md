@@ -1,3 +1,71 @@
+# 2.0.3
+
+## GUI and Functionality
+
+- **Default changed**: The exporter's HTML defaults have now `self-contained: true`
+  instead of previously `self-contained: false` -- make sure to update your
+  settings accordingly!
+- The editor dropdown list now won't be wider than the window, even if you have
+  very long citations or keywords
+- Removed the leading `#` in the tag cloud
+- Allow tags to be sorted by name or count
+- Re-introduce the project properties window, since the place within the popover
+  was very limited and people have begun calling for more features, so we need
+  the space of a dedicated window
+- Image caption changes are now also saved when the text field loses focus
+- Reworded "night mode" to "dark mode" consistently
+- Fix a minor design glitch
+- Removed the previous HTML template; now Zettlr uses Pandoc's default
+- Fix a small visual glitch that would show link tooltips in unexpected
+  locations
+- Fixed a small bug that would make Zettlr treat numbers at the beginning of a
+  line as a list too often. Now typing, e.g., "21.12.2021" will not yield a
+  "22." on the next line
+- Changing heading levels using the context menu on heading markers will no
+  longer insert the new heading level at arbitrary positions in the document
+- Fixed the accessibility to screen readers of toolbar search controls
+
+## Under the Hood
+
+- Update Pandoc to 2.16.1
+- Improve sorting behavior of directories on creation and renaming of files
+- Removed custom middle-click paste code for Linux, cf. #2321
+- Fixed a floating-point to integer conversion failure error
+- Fix potential errors in the updater window with additional sanity checks
+- Project properties are now persisted to disk only if they actually changed
+
+# 2.0.2
+
+## GUI and Functionality
+
+- Linking files by dragging them onto the editor from the file manager works
+  again.
+- Text input is automatically focused on global search (`Ctrl+Shift+F`).
+- Previously, when you saved an in-memory file to disk, the dialog would begin
+  in some random directory, but never the currently selected directory. This is
+  now fixed.
+- Added syntax highlighting for Octave (Matlab), keyword: `octave`
+- The sidebar now refreshes also whenever it is shown, preventing wrong messages
+  such as "No citations in document" when a document with citations is open.
+- Modal windows now have a title bar
+- Slightly increased the status bar height
+- Fixed the image size calculator during image pastes
+- Fixed a bug that sometimes caused the editor to randomly jump when entering a
+  newline
+- The updater has received a face lift: It should now be more responsive and
+  easier to handle. We now filter out files which wouldn't work on the given
+  platform either way, making it harder to accidentally download the Intel-
+  packages when you're on ARM (or vice versa).
+
+## Under the Hood
+
+- Switched the Linux middle-mouse-paste code to listen to mouseup events instead
+  of mousedown events in response to issue #2321
+- Update Pandoc to 2.15
+- Refactor the `UpdateProvider` so that it now has a unified state and a better
+  error reporting. It should work much better without unrecoverable states and
+  is more responsive. Additionally, removed a lot of old and dead code from it.
+
 # 2.0.1
 
 No stable release works without bugs, and thanks to our community, we found them
