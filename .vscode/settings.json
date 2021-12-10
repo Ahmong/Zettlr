@@ -8,5 +8,6 @@
     "cSpell.language": "en-GB",
     "files.associations": {
         ".ztr-directory": "json"
-    }
+    },
+    "editor.fontSize": 15
 }
