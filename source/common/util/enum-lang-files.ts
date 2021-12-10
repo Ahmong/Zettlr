@@ -33,7 +33,7 @@ export interface LangFileMetadata {
  */
 export default function enumLangFiles (paths = [ path.join(app.getPath('userData'), '/lang'), path.join(__dirname, '/lang') ]): Array<Candidate & LangFileMetadata> {
   // Now go through all search paths and enumerate all available files of interest
-  let candidates = []
+  let candidates: Array<Candidate & LangFileMetadata> = []
   for (let p of paths) {
     let list = fs.readdirSync(p)
     for (let file of list) {
@@ -44,6 +44,7 @@ export default function enumLangFiles (paths = [ path.join(app.getPath('userData
       let schema = bcp47.parse(file.substr(0, file.lastIndexOf('.')))
       if (schema.language !== undefined) {
         candidates.push({
+          // @ts-ignore
           'tag': bcp47.stringify(schema),
           'path': path.join(p, file)
         })
