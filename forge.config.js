@@ -139,8 +139,11 @@ module.exports = {
     [
       '@electron-forge/plugin-webpack',
       {
-        port: 3001,
+        port: 3000,
         loggerPort: 9001,
+        devServer: {
+          hot: true
+        },
         mainConfig: './webpack.main.config.js',
         // Since electron-forge v6.0.0-beta.58, this property controls the CSP
         // for the development process. Since the defaults by electron-forge are
