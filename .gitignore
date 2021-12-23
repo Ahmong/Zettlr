@@ -39,3 +39,13 @@ eslint_report.htm
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+
+### yarn
+# Ignore yarn cache
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
