@@ -142,7 +142,6 @@ module.exports = {
         port: 3000,
         loggerPort: 9001,
         devServer: {
-          hot: true
         },
         mainConfig: './webpack.main.config.js',
         // Since electron-forge v6.0.0-beta.58, this property controls the CSP
