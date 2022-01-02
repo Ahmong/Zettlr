@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 23:30
- * LastEditTime  : 2021-12-22 02:54
+ * LastEditTime  : 2021-12-31 02:33
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -26,8 +26,8 @@ import { history } from '@milkdown/plugin-history'
 import { indent } from '@milkdown/plugin-indent'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
 import { tooltip } from '@milkdown/plugin-tooltip'
-import { gfm } from '@milkdown/preset-gfm'
-import { nord } from '@milkdown/theme-nord'
+import { zwmarkdown } from 'preset-zwmarkdown'
+import { zwnord } from 'theme-zwnord'
 
 import { ZuowenEditor } from '.'
 
@@ -53,16 +53,16 @@ const createEditor = (
       // ctx.set(editorViewOptionsCtx, { editable: () => !(readOnly ?? false) })
       ctx.set(listenerCtx, { markdown: (onChange != null) ? [onChange] : [] })
     })
-    .use(nord)
-    .use(gfm)
+    .use(zwnord)
+    .use(zwmarkdown)
     .use(complete(() => { setEditorReady?.(true) }))
-    .use(clipboard)
+    // .use(clipboard)
     .use(listener)
-    .use(history)
-    .use(cursor)
-    .use(tooltip)
-    .use(emoji)
-    .use(indent)
+    // .use(history)
+    // .use(cursor)
+    // .use(tooltip)
+    // .use(emoji)
+    // .use(indent)
 
   return editor
 }
