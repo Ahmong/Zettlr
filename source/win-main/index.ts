@@ -35,6 +35,45 @@ document.addEventListener('dragover', function (event) {
   return false
 }, false)
 
+// Set the <html>'s font size to the editor.fontSize setting.
+function updateBaseFontSize (): void {
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  let fontSize = Number(app.$store.state.config['editor.fontSize'] as string)
+  if (fontSize < 10) {
+    fontSize = 10
+  } else if (fontSize > 32) {
+    fontSize = 32
+  }
+
+  document.documentElement.style.setProperty('--base-font-size', fontSize.toString(10) + 'px')
+}
+
+// Set editor font size first time.
+updateBaseFontSize()
+
+let browser: Record<string, any> = {}
+if (typeof navigator !== 'undefined' && typeof document !== 'undefined') {
+  const ieEdge = /Edge\/(\d+)/.exec(navigator.userAgent)
+  const ieUpto10 = /MSIE \d/.test(navigator.userAgent)
+  const ie11up = /Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent)
+
+  let ie = browser.ie = !!(ieUpto10 || (ie11up != null) || (ieEdge != null))
+  browser.ie_version = ieUpto10 ? Object.keys(document).includes('documentMode') || 6 : ie11up ? +ie11up[1] : ieEdge ? +ieEdge[1] : null
+  browser.gecko = !ie && /gecko\/(\d+)/i.test(navigator.userAgent)
+  browser.gecko_version = (Boolean(browser.gecko)) && +(/Firefox\/(\d+)/.exec(navigator.userAgent) ?? [ 0, 0 ])[1]
+  let chrome = !ie && /Chrome\/(\d+)/.exec(navigator.userAgent)
+  browser.chrome = !!chrome
+  browser.chrome_version = chrome && +chrome[1]
+  // Is true for both iOS and iPadOS for convenience
+  browser.safari = !ie && navigator.vendor.includes('Apple Computer')
+  browser.ios = browser.safari && (/Mobile\/\w+/.test(navigator.userAgent) || navigator.maxTouchPoints > 2)
+  browser.mac = browser.ios || navigator.platform.includes('Mac')
+  browser.android = /Android \d/.test(navigator.userAgent)
+  browser.webkit = 'webkitFontSmoothing' in document.documentElement.style
+  browser.webkit_version = browser.webkit && +(/\bAppleWebKit\/(\d+)/.exec(navigator.userAgent) ?? [ 0, 0 ])[1]
+}
+console.log('browser: ' + JSON.stringify(browser))
+
 // On drop, tell the renderer to tell main that there's something to
 // handle.
 document.addEventListener('drop', (event) => {
@@ -104,6 +143,8 @@ updateCitationDatabase()
 ipcRenderer.on('config-provider', (event, { command, payload }) => {
   if (command === 'update') {
     app.$store.commit('updateConfig', payload)
+    // TODO: 在消息 updateConfig 发送处设置延迟，以免过于频繁刷新界面
+    updateBaseFontSize()
   }
 })
 
