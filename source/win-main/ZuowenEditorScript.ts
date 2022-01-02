@@ -378,7 +378,7 @@ export default defineComponent({
           isClean: !curDocInfo.modified
         })
       }
-      // Todo: 延迟一段时间再更新 TOC
+      // TODO: 延迟一段时间再更新 TOC
       this.$store.commit('updateTableOfContents', this._zwEditor?.tableOfContents)
     })
 
