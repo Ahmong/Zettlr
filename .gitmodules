@@ -1,0 +1,6 @@
+[submodule "milkdown"]
+	path = milkdown
+	url = ./milkdown
+[submodule "prosemirror"]
+	path = prosemirror
+	url = ./prosemirror
