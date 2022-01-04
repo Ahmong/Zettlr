@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2021-12-22 00:18
+ * LastEditTime  : 2022-01-03 23:37
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -32,6 +32,16 @@ interface OpenDocInfo {
   saveTimeout?: any
 }
 
+/**
+ * The underline milkdown editor with ZuoWen Editor custom plugin
+ */
+const _editors = new WeakMap()
+
+/**
+ * Contains all loaded documents if applicable
+ */
+const _openDocuments = new Map<string, OpenDocInfo>()
+
 export default defineComponent({
   name: 'ZuowenEditor',
   components: {
@@ -40,14 +50,8 @@ export default defineComponent({
   },
   data: function () {
     return {
-      /**
-       * The underline milkdown editor with ZuoWen Editor custom plugin.
-       */
-      // eslint-disable-next-line vue/no-reserved-keys
-      _zwEditor: null as ZuowenEditor | null,
-
       editor: null,
-      openDocuments: new Map<string, OpenDocInfo>(), // Contains all loaded documents if applicable
+      // openDocuments: new Map<string, OpenDocInfo>(), // Contains all loaded documents if applicable
       currentlyFetchingFiles: [] as string[], // Contains the paths of files that are right now being fetched
       // Should we perform a regexp search?
       regexpSearch: false,
@@ -63,6 +67,12 @@ export default defineComponent({
     }
   },
   computed: {
+    zwEditor: function () {
+      return _editors.get(this) as ZuowenEditor
+    },
+    openDocuments: function() {
+      return _openDocuments
+    },
     findPlaceholder: function () {
       return trans('dialog.find.find_placeholder')
     },
@@ -167,7 +177,7 @@ export default defineComponent({
   },
   watch: {
     activeFile: function () {
-      if (this._zwEditor === null) {
+      if (this.zwEditor === null) {
         console.error('Received a file update but the editor was not yet initiated!')
         return
       }
@@ -175,10 +185,10 @@ export default defineComponent({
       if (this.activeFile === null) {
         console.log('activeFile switch to null')
         const oldDocInfo = this.openDocuments.get(this.currentPath)
-        oldDocInfo !== undefined && (oldDocInfo.workingDocState = this._zwEditor.swapDoc(''))
+        oldDocInfo !== undefined && (oldDocInfo.workingDocState = this.zwEditor.swapDoc(''))
 
         this.setCurrentDoc('')
-        this.$store.commit('updateTableOfContents', this._zwEditor.tableOfContents)
+        this.$store.commit('updateTableOfContents', this.zwEditor.tableOfContents)
         return
       }
       console.log('activeFile switch to: ' + String(this.activeFile.path))
@@ -188,14 +198,14 @@ export default defineComponent({
         console.log('reuse opened file: ' + newActiveDoc.path)
         // Simply swap it
         const oldDocInfo = this.openDocuments.get(this.currentPath)
-        oldDocInfo !== undefined && (oldDocInfo.workingDocState = this._zwEditor.swapDoc(newActiveDoc.workingDocState))
+        oldDocInfo !== undefined && (oldDocInfo.workingDocState = this.zwEditor.swapDoc(newActiveDoc.workingDocState))
 
         this.setCurrentDoc(this.activeFile.path)
-        this._zwEditor.setOptions({
+        this.zwEditor.setOptions({
           zettlr: { markdownImageBasePath: this.activeFile.dir }
         })
-        // this.$store.commit('updateTableOfContents', this._zwEditor.tableOfContents)
-        this.$store.commit('activeDocumentInfo', this._zwEditor.documentInfo)
+        // this.$store.commit('updateTableOfContents', this.zwEditor.tableOfContents)
+        this.$store.commit('activeDocumentInfo', this.zwEditor.documentInfo)
       } else if (!this.currentlyFetchingFiles.includes(this.activeFile.path)) {
         console.log('try to fetch file content: ' + String(this.activeFile.path))
         // We have to request the document beforehand
@@ -204,25 +214,25 @@ export default defineComponent({
         ipcRenderer.invoke('application', { command: 'get-file-contents', payload: fetchingPath })
           .then((descriptorWithContent) => {
             console.log('file content returned: ' + String(descriptorWithContent.path))
-            if (this._zwEditor !== null) {
+            if (this.zwEditor !== null) {
               const curDocInfo = this.openDocuments.get(this.currentPath)
-              curDocInfo !== undefined && (curDocInfo.workingDocState = this._zwEditor.getDoc())
+              curDocInfo !== undefined && (curDocInfo.workingDocState = this.zwEditor.getDoc())
 
               // parse the doc content as markdown string
               let parseError = false
               try {
-                this._zwEditor.swapDoc(descriptorWithContent.content)
+                this.zwEditor.swapDoc(descriptorWithContent.content)
               } catch (e) {
                 console.log('Parse from markdown string error...')
                 console.error(e)
-                this._zwEditor.swapDoc('')
+                this.zwEditor.swapDoc('')
                 parseError = true
               }
 
               const newDoc: OpenDocInfo = {
                 path: descriptorWithContent.path,
                 dir: descriptorWithContent.dir, // Save the dir to distinguish memory-files from others
-                workingDocState: this._zwEditor.getDoc(),
+                workingDocState: this.zwEditor.getDoc(),
                 modified: false,
                 readOnly: parseError,
                 lastWordCount: countWords(descriptorWithContent.content, this.shouldCountChars),
@@ -235,21 +245,21 @@ export default defineComponent({
               // If it has, don't overwrite the current one
               if (this.activeFile.path === descriptorWithContent.path) {
                 console.log('same active file still there')
-                this._zwEditor.setOptions({
+                this.zwEditor.setOptions({
                   zettlr: { markdownImageBasePath: this.activeFile.dir }
                 })
                 this.setCurrentDoc(newDoc.path)
 
-                // this._zwEditor.swapDoc(newDoc.workingDocState)
-                this.$store.commit('updateTableOfContents', this._zwEditor.tableOfContents)
-                this.$store.commit('activeDocumentInfo', this._zwEditor.documentInfo)
+                // this.zwEditor.swapDoc(newDoc.workingDocState)
+                this.$store.commit('updateTableOfContents', this.zwEditor.tableOfContents)
+                this.$store.commit('activeDocumentInfo', this.zwEditor.documentInfo)
               } else if (curDocInfo !== undefined) {
                 console.log('active file has changed to: ' + String(this.activeFile.path) + '. Resume to current file')
-                this._zwEditor.swapDoc(curDocInfo.workingDocState)
+                this.zwEditor.swapDoc(curDocInfo.workingDocState)
                 this.setCurrentDoc(curDocInfo.path)
               }
             } else {
-              console.log('_zwEditor is null now!!!')
+              console.log('this.zwEditor is null now!!!')
             }
           })
           .catch(e => {
@@ -314,25 +324,25 @@ export default defineComponent({
       } else if (newValue === false) {
         // Always "stopSearch" if the input is not shown, since this will clear
         // out, e.g., the matches on the scrollbar
-        this._zwEditor?.stopSearch()
+        this.zwEditor?.stopSearch()
       }
     },
     shouldCountChars: function (newVal, oldVal) {
-      (this._zwEditor != null) && (this._zwEditor.countChars = newVal)
+      (this.zwEditor != null) && (this.zwEditor.countChars = newVal)
     }
   },
   mounted: function () {
     // As soon as the component is mounted, initiate the editor
-    this._zwEditor = new ZuowenEditor(this.$refs.editorarea as HTMLElement, this.editorConfiguration)
+    const _zwEditor = new ZuowenEditor(this.$refs.editorarea as HTMLElement, this.editorConfiguration)
 
     // We have to set this to the appropriate value after mount, afterwards it
     // will be updated as appropriate.
-    this._zwEditor.countChars = this.shouldCountChars
+    _zwEditor.countChars = this.shouldCountChars
 
     // Listen to change events on the doc, because if the user pastes
     // more than ten words at once, we need to substract it to not
     // mess with the word count.
-    this._zwEditor.onChange((getMarkdown) => {
+    _zwEditor.onChange((getMarkdown) => {
       const newTextWords = countWords(getMarkdown(), this.shouldCountChars)
       if (newTextWords > 10) {
         const curDocInfo = this.openDocuments.get(this.currentPath)
@@ -341,7 +351,7 @@ export default defineComponent({
     })
 
     // Implement autosaving
-    this._zwEditor.onChange((_) => {
+    _zwEditor.onChange((_) => {
       // Do not attempt to autosave if it's off or we're dealing with an in-memory file.
       if (this.autoSave === 'off' || this.currentPath.length > 0) {
         return
@@ -369,7 +379,7 @@ export default defineComponent({
     })
 
     // Update the document info on corresponding events
-    this._zwEditor.onChange((_) => {
+    _zwEditor.onChange((_) => {
       // Announce that the file is modified (if applicable) to the whole application
       const curDocInfo = this.openDocuments.get(this.currentPath)
       if (curDocInfo !== undefined) {
@@ -379,11 +389,11 @@ export default defineComponent({
         })
       }
       // TODO: 延迟一段时间再更新 TOC
-      this.$store.commit('updateTableOfContents', this._zwEditor?.tableOfContents)
+      this.$store.commit('updateTableOfContents', _zwEditor.tableOfContents)
     })
 
     /*
-    this._zwEditor.on('cursorActivity', () => {
+    _zwEditor.on('cursorActivity', () => {
       // Don't update every keystroke to not run into performance problems with
       // very long documents, since calculating the word count needs considerable
       // time, and without the delay, typing seems "laggy".
@@ -391,7 +401,7 @@ export default defineComponent({
     })
     */
 
-    this._zwEditor.on('zettelkasten-link', (linkContents) => {
+    _zwEditor.on('zettelkasten-link', (linkContents) => {
       ipcRenderer.invoke('application', {
         command: 'force-open',
         payload: linkContents
@@ -403,9 +413,12 @@ export default defineComponent({
       }
     })
 
-    this._zwEditor.on('zettelkasten-tag', (tag) => {
+    _zwEditor.on('zettelkasten-tag', (tag) => {
       (this.$root as any).startGlobalSearch(tag)
     })
+
+    // save to editors selfly
+    _editors.set(this, _zwEditor)
 
     // Listen to shortcuts from the main process
     ipcRenderer.on('shortcut', (event, shortcut) => {
@@ -413,9 +426,9 @@ export default defineComponent({
         const curDocInfo = this.openDocuments.get(this.currentPath)
         curDocInfo !== undefined && (this.save(curDocInfo).catch(e => console.error(e)))
       } else if (shortcut === 'copy-as-html') {
-        this._zwEditor?.copyAsHTML()
+        _zwEditor.copyAsHTML()
       } else if (shortcut === 'paste-as-plain') {
-        this._zwEditor?.pasteAsPlainText()
+        _zwEditor.pasteAsPlainText()
       } else if (shortcut === 'search') {
         this.showSearch = !this.showSearch
       }
@@ -431,11 +444,9 @@ export default defineComponent({
 
       if (doc !== undefined) {
         // const cur = Object.assign({}, doc.cmDoc.getCursor())
-        if (this._zwEditor !== undefined) {
-          const result = this._zwEditor?.updateDoc(fileDescriptor.content, doc.workingDocState) ?? null
-          if (result !== null) {
-            doc.workingDocState = result
-          }
+        const result = _zwEditor.updateDoc(fileDescriptor.content, doc.workingDocState) ?? null
+        if (result !== null) {
+          doc.workingDocState = result
         }
         nextTick()
           .then(() => {
@@ -473,7 +484,7 @@ export default defineComponent({
   methods: {
     setCurrentDoc (curPath: string): void {
       this.currentPath = curPath
-      this._zwEditor?.swapDoc(this.openDocuments.get(this.currentPath)?.workingDocState ?? '')
+      this.zwEditor?.swapDoc(this.openDocuments.get(this.currentPath)?.workingDocState ?? '')
     },
     maybeUpdateActiveDocumentInfo () {
       if (this.docInfoTimeout !== undefined) {
@@ -481,14 +492,14 @@ export default defineComponent({
       }
 
       this.docInfoTimeout = setTimeout(() => {
-        this.$store.commit('activeDocumentInfo', this._zwEditor?.documentInfo)
+        this.$store.commit('activeDocumentInfo', this.zwEditor?.documentInfo)
         this.docInfoTimeout = undefined
       }, 1000)
     },
     /*
     jtl (lineNumber) {
-      if (this._zwEditor !== null) {
-        this._zwEditor.jtl(lineNumber)
+      if (this.zwEditor !== null) {
+        this.zwEditor.jtl(lineNumber)
       }
     },
     */
@@ -519,7 +530,7 @@ export default defineComponent({
         return // Nothing to save
       }
 
-      const newContents = this._zwEditor?.toMarkdown(doc.workingDocState) ?? ''
+      const newContents = this.zwEditor?.toMarkdown(doc.workingDocState) ?? ''
       const currentWordCount = countWords(newContents, this.shouldCountChars)
       const descriptor = {
         path: doc.path,
@@ -584,7 +595,7 @@ export default defineComponent({
         })
       }
 
-      this._zwEditor?.setCompletionDatabase('files', fileDatabase)
+      this.zwEditor?.setCompletionDatabase('files', fileDatabase)
     },
     toggleQueryRegexp () {
       const isRegexp = /^\/.+\/[gimy]{0,4}$/.test(this.query.trim())
@@ -600,8 +611,8 @@ export default defineComponent({
     },
     executeCommand (cmd: string) {
       // Executes a markdown command on the editor instance
-      this._zwEditor?.runCommand(cmd)
-      this._zwEditor?.focus()
+      this.zwEditor?.runCommand(cmd)
+      this.zwEditor?.focus()
     },
     // SEARCH FUNCTIONALITY BLOCK
     searchNext () {
@@ -612,19 +623,19 @@ export default defineComponent({
         this.findTimeout = undefined
       }
 
-      this._zwEditor?.searchNext(this.query)
+      this.zwEditor?.searchNext(this.query)
     },
     searchPrevious () {
-      this._zwEditor?.searchPrevious(this.query)
+      this.zwEditor?.searchPrevious(this.query)
     },
     replaceNext () {
-      this._zwEditor?.replaceNext(this.query, this.replaceString)
+      this.zwEditor?.replaceNext(this.query, this.replaceString)
     },
     replacePrevious () {
-      this._zwEditor?.replacePrevious(this.query, this.replaceString)
+      this.zwEditor?.replacePrevious(this.query, this.replaceString)
     },
     replaceAll () {
-      this._zwEditor?.replaceAll(this.query, this.replaceString)
+      this.zwEditor?.replaceAll(this.query, this.replaceString)
     },
     /**
      * Scrolls the editor according to the value if the user scrolls left of the
@@ -656,8 +667,8 @@ export default defineComponent({
       }
 
       // set the start point of the selection to be where the mouse was clicked
-      this.anchor = this._zwEditor.codeMirror.coordsChar({ left: event.pageX, top: event.pageY })
-      this._zwEditor.codeMirror.setSelection(this.anchor)
+      this.anchor = this.zwEditor.codeMirror.coordsChar({ left: event.pageX, top: event.pageY })
+      this.zwEditor.codeMirror.setSelection(this.anchor)
       */
     },
 
@@ -667,10 +678,10 @@ export default defineComponent({
         return
       }
       // get the point where the mouse has moved
-      const addPoint = this._zwEditor.codeMirror.coordsChar({ left: event.pageX, top: event.pageY })
+      const addPoint = this.zwEditor.codeMirror.coordsChar({ left: event.pageX, top: event.pageY })
       // use the original start point where the mouse first was clicked
       // and change the end point to where the mouse has moved so far
-      this._zwEditor.codeMirror.setSelection(this.anchor, addPoint)
+      this.zwEditor.codeMirror.setSelection(this.anchor, addPoint)
       */
     },
     /**
@@ -690,7 +701,7 @@ export default defineComponent({
       // when the mouse is released, set anchor to undefined to stop adding lines
       this.anchor = undefined
       // Also, make sure the editor is focused.
-      this._zwEditor?.focus()
+      this.zwEditor?.focus()
       */
     },
     addKeywordsToFile (keywords: string) {
@@ -701,7 +712,7 @@ export default defineComponent({
       if (curDocInfo === undefined) return
 
       let { frontmatter, content } = extractYamlFrontmatter(
-        this._zwEditor?.toMarkdown(curDocInfo.workingDocState) ?? '') // NOTE: We can keep the linefeed to \n since CodeMirror is set to ALWAYS use \n
+        this.zwEditor?.toMarkdown(curDocInfo.workingDocState) ?? '') // NOTE: We can keep the linefeed to \n since CodeMirror is set to ALWAYS use \n
 
       let postFrontmatter = '\n'
       if (frontmatter !== null) {
@@ -720,8 +731,8 @@ export default defineComponent({
       }
 
       // Glue it back together and set it as content
-      if (this._zwEditor !== null) {
-        this._zwEditor.updateDoc(
+      if (this.zwEditor !== null) {
+        this.zwEditor.updateDoc(
           '---\n' + YAML.stringify(frontmatter) + '---' + postFrontmatter + content,
           curDocInfo.workingDocState
         )
