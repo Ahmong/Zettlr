@@ -1216,7 +1216,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@milkdown/plugin-prism@workspace:milkdown/packages/plugin-prism":
+"@milkdown/plugin-prism@workspace:*, @milkdown/plugin-prism@workspace:milkdown/packages/plugin-prism":
   version: 0.0.0-use.local
   resolution: "@milkdown/plugin-prism@workspace:milkdown/packages/plugin-prism"
   dependencies:
@@ -16240,6 +16240,8 @@ __metadata:
     "@milkdown/plugin-indent": "workspace:*"
     "@milkdown/plugin-listener": "workspace:*"
     "@milkdown/plugin-math": "workspace:*"
+    "@milkdown/plugin-prism": "workspace:*"
+    "@milkdown/plugin-table": "workspace:*"
     "@milkdown/plugin-tooltip": "workspace:*"
     "@milkdown/preset-gfm": "workspace:*"
     "@milkdown/prose": "workspace:*"
