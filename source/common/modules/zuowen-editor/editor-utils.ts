@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 23:30
- * LastEditTime  : 2021-12-31 02:33
+ * LastEditTime  : 2022-01-04 00:51
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -18,6 +18,7 @@ import {
   rootCtx,
   serializerCtx
 } from '@milkdown/core'
+import { AtomList } from '@milkdown/utils';
 import { EditorProps, EditorState } from '@milkdown/prose'
 import { clipboard } from '@milkdown/plugin-clipboard'
 import { cursor } from '@milkdown/plugin-cursor'
@@ -25,11 +26,17 @@ import { emoji } from '@milkdown/plugin-emoji'
 import { history } from '@milkdown/plugin-history'
 import { indent } from '@milkdown/plugin-indent'
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
+import { math } from '@milkdown/plugin-math'
+import { prism } from '@milkdown/plugin-prism'
+import { tablePlugin } from '@milkdown/plugin-table'
 import { tooltip } from '@milkdown/plugin-tooltip'
 import { zwmarkdown } from 'preset-zwmarkdown'
 import { zwnord } from 'theme-zwnord'
 
 import { ZuowenEditor } from '.'
+
+// const extZwmarkdown = AtomList.create([...zwmarkdown, tablePlugin(), urlPlugin(), strikeThrough(), taskListItem()]);
+// const extZwmarkdown = AtomList.create([...zwmarkdown, tablePlugin()]);
 
 const complete =
   (callback: () => void): MilkdownPlugin =>
@@ -55,14 +62,16 @@ const createEditor = (
     })
     .use(zwnord)
     .use(zwmarkdown)
+    // .use(extZwmarkdown)
     .use(complete(() => { setEditorReady?.(true) }))
-    // .use(clipboard)
+    .use(clipboard)
     .use(listener)
-    // .use(history)
-    // .use(cursor)
-    // .use(tooltip)
-    // .use(emoji)
-    // .use(indent)
+    .use(history)
+    .use(cursor)
+    .use(prism)
+    .use(tooltip)
+    .use(emoji)
+    .use(indent)
 
   return editor
 }
