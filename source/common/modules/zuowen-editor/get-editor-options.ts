@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 22:24
- * LastEditTime  : 2021-12-19 22:35
+ * LastEditTime  : 2022-01-05 12:03
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -12,65 +12,67 @@
  * ---
 **/
 
-import { EditorProps } from '@milkdown/prose'
+import { DirectEditorProps } from '@milkdown/prose'
 import { ZuowenEditor } from './index'
 
 // const generateKeymap = require('./generate-keymap.js')
 
-interface ZuowenEditorOptions {
-  prosemirror?: EditorProps<ZuowenEditor>
-  zettlr?: ZettlrOptions
+type ZuowenEditorOptions = Partial<CompositeOptions>
+
+interface CompositeOptions {
+  prosemirror: Partial<DirectEditorProps>
+  zettlr: Partial<ZettlrOptions>
 }
 
 interface ZettlrOptions {
   // Element rendering
-  render?: {
-    iframes?: boolean
-    images?: boolean
-    links?: boolean
-    math?: boolean
-    tasks?: boolean
-    headingTags?: boolean
-    tables?: boolean
-    wysiwyg?: boolean
-  }
+  render: Partial<{
+    iframes: boolean
+    images: boolean
+    links: boolean
+    math: boolean
+    tasks: boolean
+    headingTags: boolean
+    tables: boolean
+    wysiwyg: boolean
+  }>
   // Set to true to start the full screen mode
-  fullScreen?: boolean
+  fullScreen: boolean
   // Placeholder for empty instances, necessary to maintain the styling
-  placeholder?: string
+  placeholder: string
   // Soft-wrap longer lines
-  lineWrapping?: boolean
+  lineWrapping: boolean
   // Pandoc requires 4 spaces indentation, which is the default
-  indentUnit?: number
+  indentUnit: number
   // Maximum width of images
-  imagePreviewWidth?: number
+  imagePreviewWidth: number
   // Maximum height of images
-  imagePreviewHeight?: number
+  imagePreviewHeight: number
   // Zettelkasten elements; necessary for the renderers
-  zettelkasten?: {
+  zettelkasten: Partial<{
     // How to determine IDs
-    idRE?: string
+    idRE: string
     // How to generate IDs
-    idGen?: string
+    idGen: string
     // Zettelkasten link start
-    linkStart?: string
+    linkStart: string
     // Zettelkasten link end
-    linkEnd?: string
+    linkEnd: string
     // Should link with filename?
-    linkWithFilename?: boolean
-  }
+    linkWithFilename: boolean
+  }>
   // The base path used to render the image in case of relative URLs
-  markdownImageBasePath?: string
+  markdownImageBasePath: string
   // The characters used for bold formatting
-  markdownBoldFormatting?: string
+  markdownBoldFormatting: string
   // The characters used for italic formatting
-  markdownItalicFormatting?: string
+  markdownItalicFormatting: string
 }
 
 /**
  * Returns Editor default options, with sound settings for Zettlr applied.
  */
-const getEditorDefaultOptions = function (): ZuowenEditorOptions {
+const getEditorDefaultOptions = function (): Partial<ZuowenEditorOptions> {
   return {
     /**
      * prosemirror-view OPTIONS

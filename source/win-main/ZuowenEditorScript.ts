@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-03 23:37
+ * LastEditTime  : 2022-01-05 12:51
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -19,6 +19,11 @@ import { trans } from '../common/i18n-renderer'
 import extractYamlFrontmatter from '../common/util/extract-yaml-frontmatter'
 import YAML from 'yaml'
 import { ZuowenEditorOptions } from '../common/modules/zuowen-editor/get-editor-options'
+// import { etTransaction } from 'electron'
+import {
+  EditorState,
+  Transaction
+} from '@milkdown/prose'
 
 const ipcRenderer = (window as any).ipc as Electron.IpcRenderer
 
@@ -41,6 +46,7 @@ const _editors = new WeakMap()
  * Contains all loaded documents if applicable
  */
 const _openDocuments = new Map<string, OpenDocInfo>()
+let _currentWorkingState = {} as EditorState
 
 export default defineComponent({
   name: 'ZuowenEditor',
@@ -72,6 +78,9 @@ export default defineComponent({
     },
     openDocuments: function() {
       return _openDocuments
+    },
+    currentWorkingState: function() {
+      return _currentWorkingState
     },
     findPlaceholder: function () {
       return trans('dialog.find.find_placeholder')
@@ -147,6 +156,11 @@ export default defineComponent({
           }
         },
         prosemirror: {
+          /*
+          dispatchTransaction: (tr: Transaction<any>): void => {
+            this.setCurrentWorkingState(this.zwEditor.dispatchTransaction(tr))
+          },
+          */
           editable: () => {
             return !((this.openDocuments.get(this.currentPath)?.readOnly) ?? true)
           }
@@ -443,19 +457,12 @@ export default defineComponent({
       const doc = this.openDocuments.get(fileDescriptor.path)
 
       if (doc !== undefined) {
-        // const cur = Object.assign({}, doc.cmDoc.getCursor())
-        const result = _zwEditor.updateDoc(fileDescriptor.content, doc.workingDocState) ?? null
-        if (result !== null) {
-          doc.workingDocState = result
-        }
+        // TODO: Ask user which version will accept if change both side
+        doc.workingDocState = _zwEditor.updateDoc(fileDescriptor.content)
         nextTick()
           .then(() => {
             // Wait a little bit for the unwanted modification-events to emit and
             // then immediately revert that status again.
-            /*
-            doc.cmDoc.markClean()
-            doc.cmDoc.setCursor(cur)
-            */
             this.$store.commit('announceModifiedFile', {
               filePath: doc.path,
               isClean: true
@@ -485,6 +492,9 @@ export default defineComponent({
     setCurrentDoc (curPath: string): void {
       this.currentPath = curPath
       this.zwEditor?.swapDoc(this.openDocuments.get(this.currentPath)?.workingDocState ?? '')
+    },
+    setCurrentWorkingState: function(state: EditorState) {
+      _currentWorkingState = state
     },
     maybeUpdateActiveDocumentInfo () {
       if (this.docInfoTimeout !== undefined) {
@@ -733,8 +743,7 @@ export default defineComponent({
       // Glue it back together and set it as content
       if (this.zwEditor !== null) {
         this.zwEditor.updateDoc(
-          '---\n' + YAML.stringify(frontmatter) + '---' + postFrontmatter + content,
-          curDocInfo.workingDocState
+          '---\n' + YAML.stringify(frontmatter) + '---' + postFrontmatter + content
         )
       }
     }

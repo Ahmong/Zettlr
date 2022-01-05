@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 20:46
- * LastEditTime  : 2021-12-22 00:47
+ * LastEditTime  : 2022-01-05 12:52
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -12,7 +12,12 @@
 
 /* eslint-disable @typescript-eslint/prefer-readonly */
 
-import { EditorState, Slice } from '@milkdown/prose'
+import {
+  EditorState,
+  Slice,
+  Transaction,
+  EditorView
+} from '@milkdown/prose'
 import {
   Editor as mdEditor,
   editorStateOptionsCtx,
@@ -36,6 +41,7 @@ import safeAssign from '../../util/safe-assign'
  * APIs
  */
 import { EventEmitter } from 'events'
+// import { Transaction } from 'electron'
 
 // type EditorViewOptions = Omit<ConstructorParameters<typeof EditorView>[1], 'state'>
 
@@ -397,6 +403,16 @@ class ZuowenEditor extends EventEmitter {
   }
   */
 
+  dispatchTransaction (tr: Transaction): EditorState {
+    return this._instance.action((ctx) => {
+      const view = ctx.get(editorViewCtx)
+      const newState = view.state.apply(tr)
+      view.updateState(newState)
+      ctx.set(editorStateCtx, newState)
+      return newState
+    })
+  }
+
   /**
    * Swaps the current editting Document with a new one
    *
@@ -405,42 +421,40 @@ class ZuowenEditor extends EventEmitter {
    * @return  {WorkingDocState | undefined} The previous editting document instance
    */
   swapDoc (newDoc: WorkingDocState | string): WorkingDocState {
-    let newState: EditorState | null | undefined
+    let oldWorkingDocState = {} as WorkingDocState
 
-    if (typeof newDoc === 'string') {
-      newState = this._instance.action((ctx) => {
-        const parser = ctx.get(parserCtx)
-        const doc = parser(newDoc)
-        if (doc == null) return
-        const schema = ctx.get(schemaCtx)
-        const view = ctx.get(editorViewCtx)
-        const state = view.state
-        const plugins = state.plugins
-        const options = ctx.get(editorStateOptionsCtx)
-        return EditorState.create({
-          schema,
-          doc,
-          plugins,
-          ...options
-        })
-      })
-    } else {
-      newState = newDoc.editorState
-    }
+    this._instance.action((ctx) => {
+      let newState: EditorState | null | undefined
+      const view = ctx.get(editorViewCtx)
+      oldWorkingDocState.editorState = view.state
 
-    const oldDoc = this._instance.action((ctx) => {
-      const editorView = ctx.get(editorViewCtx)
-      const oldState = editorView.state
-
-      if (newState !== null) {
-        editorView.updateState(newState as EditorState)
+      if (typeof newDoc === 'string') {
+          const parser = ctx.get(parserCtx)
+          let doc = parser(newDoc)
+          if (!doc) {
+            doc = parser('')
+            console.error('Markdown file parse error, content:"'
+                          + newDoc.slice(0, 40)
+                          + ' ..."')
+          }
+          const schema = ctx.get(schemaCtx)
+          const plugins = view.state.plugins
+          // const options = ctx.get(editorStateOptionsCtx)
+          newState = EditorState.create({
+            schema,
+            doc,
+            plugins
+          })
+      } else {
+        newState = newDoc.editorState
       }
-      ctx.set(editorStateCtx, editorView.state)
-      return { editorState: oldState }
+
+      view.updateState(newState as EditorState)
+      ctx.set(editorStateCtx, view.state)
     })
 
     this.focus()
-    return oldDoc
+    return oldWorkingDocState
   }
 
   /**
@@ -450,25 +464,30 @@ class ZuowenEditor extends EventEmitter {
    *
    * @return  {WorkingDocState}           the Working document instance
    */
-  updateDoc (content: string, workingState: WorkingDocState): WorkingDocState {
+  updateDoc (content: string): WorkingDocState {
+    let state = {} as EditorState 
     const result = this._instance.action((ctx) => {
       const parser = ctx.get(parserCtx)
-      let state = workingState?.editorState ?? null
-      if (state === null) {
-        state = ctx.get(editorViewCtx).state
+      let doc = parser(content)
+      if (!doc) {
+        doc = parser('')
+        console.error('Markdown file parse error, content:"'
+                      + doc?.slice(0, 40)
+                      + ' ..."')
       }
-      const doc = parser(content)
-      if (doc == null) return null
-      // view.dispatch(state.tr.replace(0, state.doc.content.size, new Slice(doc.content, 0, 0)))
-      const tr = state.tr.replace(0, state.doc.content.size, new Slice(doc.content, 0, 0))
-      state = state.apply(tr)
-      return { editorState: state, docChanged: tr.docChanged }
+      const schema = ctx.get(schemaCtx)
+      const view = ctx.get(editorViewCtx)
+      const plugins = view.state.plugins
+      // const options = ctx.get(editorStateOptionsCtx)
+      state = EditorState.create({
+        schema,
+        doc,
+        plugins
+      })
+      view.updateState(state)
+      ctx.set(editorStateCtx, state)
     })
-    if (result === null) {
-      return workingState
-    } else {
-      return result
-    }
+    return { editorState: state }
   }
 
   /**
