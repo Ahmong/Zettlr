@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-05 12:51
+ * LastEditTime  : 2022-01-05 17:35
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -397,6 +397,7 @@ export default defineComponent({
       // Announce that the file is modified (if applicable) to the whole application
       const curDocInfo = this.openDocuments.get(this.currentPath)
       if (curDocInfo !== undefined) {
+        curDocInfo.modified = true
         this.$store.commit('announceModifiedFile', {
           filePath: curDocInfo.path,
           isClean: !curDocInfo.modified
@@ -448,27 +449,31 @@ export default defineComponent({
       }
     })
 
-    ipcRenderer.on('open-file-changed', (event, fileDescriptor) => {
+    ipcRenderer.on('open-file-changed', (event, arg) => {
       // This event is emitted by the main process if the user wants to exchange
       // a file with remote changes. It already ships with the file descriptor
       // so all we have to do is find the right file and just swap the contents.
       // We don't need to update anything else, since that has been updated in
       // the application's store already by the time this event arrives.
-      const doc = this.openDocuments.get(fileDescriptor.path)
+      const file = arg.file
+      const doc = this.openDocuments.get(file.path)
 
       if (doc !== undefined) {
-        // TODO: Ask user which version will accept if change both side
-        doc.workingDocState = _zwEditor.updateDoc(fileDescriptor.content)
-        nextTick()
-          .then(() => {
-            // Wait a little bit for the unwanted modification-events to emit and
-            // then immediately revert that status again.
-            this.$store.commit('announceModifiedFile', {
-              filePath: doc.path,
-              isClean: true
+        if (doc.modified && !arg.force) {
+          ipcRenderer.send('file-change-conflict', file)
+        } else {
+          doc.workingDocState = _zwEditor.updateDoc(file.content)
+          nextTick()
+            .then(() => {
+              // Wait a little bit for the unwanted modification-events to emit and
+              // then immediately revert that status again.
+              this.$store.commit('announceModifiedFile', {
+                filePath: doc.path,
+                isClean: true
+              })
             })
-          })
-          .catch(err => console.error(err))
+            .catch(err => console.error(err))
+        }
       }
     })
 

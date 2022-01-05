@@ -202,6 +202,27 @@ export default class Zettlr {
       return this._documentManager.isClean()
     })
 
+    this._windowManager.on('file-change-conflict', (file: MDFileMeta|CodeFileMeta) => {
+      // Prevent multiple instances of the dialog, just ask once. The logic
+      // always retrieves the most recent version either way
+      const filePath = file.path
+      if (this.isShownFor.includes(filePath)) {
+        return
+      }
+      this.isShownFor.push(filePath)
+
+      // Ask the user if we should replace the file
+      this._windowManager.shouldReplaceFile(file.name)
+        .then((shouldReplace) => {
+          // In any case remove the isShownFor for this file.
+          this.isShownFor.splice(this.isShownFor.indexOf(filePath), 1)
+          if (!shouldReplace) {
+            return
+          }
+          broadcastIpcMessage('open-file-changed', {file, force: true})
+        }).catch(e => global.log.error(e.message, e)) // END ask replace file
+    })
+
     this._windowManager.on('main-window-closed', () => {
       // Reset the FSAL state history so that any new window will have a clean start
       this._fsal.resetFiletreeHistory()
@@ -261,39 +282,10 @@ export default class Zettlr {
    */
   _onFileContentsChanged (changedFile: MDFileDescriptor|CodeFileDescriptor): void {
     // The contents of one of the open files have changed.
-    // What follows looks a bit ugly, welcome to callback hell.
-    if (global.config.get('alwaysReloadFiles') === true) {
-      this._documentManager.getFileContents(changedFile).then((file: MDFileMeta|CodeFileMeta) => {
-        broadcastIpcMessage('open-file-changed', file)
-      }).catch(e => global.log.error(e.message, e))
-    } else {
-      // Prevent multiple instances of the dialog, just ask once. The logic
-      // always retrieves the most recent version either way
-      const filePath = changedFile.path
-      if (this.isShownFor.includes(filePath)) {
-        return
-      }
-      this.isShownFor.push(filePath)
-
-      // Ask the user if we should replace the file
-      this._windowManager.shouldReplaceFile(changedFile.name)
-        .then((shouldReplace) => {
-          // In any case remove the isShownFor for this file.
-          this.isShownFor.splice(this.isShownFor.indexOf(filePath), 1)
-          if (!shouldReplace) {
-            return
-          }
-
-          if (changedFile === null) {
-            global.log.error('[Application] Cannot replace file.', changedFile)
-            return
-          }
-
-          this._documentManager.getFileContents(changedFile).then((file: any) => {
-            broadcastIpcMessage('open-file-changed', file)
-          }).catch(e => global.log.error(e.message, e))
-        }).catch(e => global.log.error(e.message, e)) // END ask replace file
-    }
+    this._documentManager.getFileContents(changedFile).then((file: MDFileMeta|CodeFileMeta) => {
+      let force = global.config.get('alwaysReloadFiles')
+      broadcastIpcMessage('open-file-changed', {file, force})
+    }).catch(e => global.log.error(e.message, e))
   }
 
   /**

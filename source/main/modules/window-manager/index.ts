@@ -192,6 +192,11 @@ export default class WindowManager extends EventEmitter {
       }
     })
 
+    // remote and local change conflict event from editor (win-main)
+    ipcMain.on('file-change-conflict', async (event, message) => {
+      this.emit('file-change-conflict', message)
+    })
+
     /**
      * Handle incoming requests for files (on the operating system). This request
      * can be made by any renderer process. The window manager will prompt the
