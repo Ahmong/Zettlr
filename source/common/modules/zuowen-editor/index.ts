@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 20:46
- * LastEditTime  : 2022-01-05 12:52
+ * LastEditTime  : 2022-01-05 22:38
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -119,7 +119,6 @@ class ZuowenEditor extends EventEmitter {
     // Register the readonly handler for editorble prop
     setEditorViewOptions(this._instance, zwOptions.prosemirror)
 
-    void this._instance.create()
 
     // Immediately afterwards, set the new options passed to overwrite
     // this.setOptions(cmOptions)
@@ -255,6 +254,25 @@ class ZuowenEditor extends EventEmitter {
     this.updateSnippetAutocomplete().catch(err => console.error(err))
     */
   } // END CONSTRUCTOR
+
+  onChange (callback: (getMarkdown: () => string) => void): void {
+    this._instance.config((ctx) => {
+      ctx.update(listenerCtx, listener => {
+        if (listener.markdown !== undefined) {
+          listener.markdown.push(callback)
+        } else {
+          listener.markdown = [callback]
+        }
+        return listener
+      })
+    })
+  }
+
+  // initial the milkdown editor
+  // After init, the configuration of milkdown is frost
+  init (): void {
+    void this._instance.create()
+  }
 
   // SEARCH FUNCTIONALITY
   searchNext (term: string): void {
@@ -534,19 +552,6 @@ class ZuowenEditor extends EventEmitter {
       const editorView = ctx.get(editorViewCtx)
 
       editorView.focus()
-    })
-  }
-
-  onChange (callback: (getMarkdown: () => string) => void): void {
-    this._instance.config((ctx) => {
-      ctx.update(listenerCtx, listener => {
-        if (listener.markdown !== undefined) {
-          listener.markdown.push(callback)
-        } else {
-          listener.markdown = [callback]
-        }
-        return listener
-      })
     })
   }
 

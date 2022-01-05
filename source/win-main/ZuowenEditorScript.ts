@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-05 17:35
+ * LastEditTime  : 2022-01-05 22:55
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -406,6 +406,13 @@ export default defineComponent({
       // TODO: 延迟一段时间再更新 TOC
       this.$store.commit('updateTableOfContents', _zwEditor.tableOfContents)
     })
+
+    // init the underline milkdown editor.
+    // All configuration to the milkdown should before the init()
+    _zwEditor.init()
+
+    // Listener of zwEditor
+    //
 
     /*
     _zwEditor.on('cursorActivity', () => {
