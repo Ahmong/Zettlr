@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-05 22:55
+ * LastEditTime  : 2022-01-05 23:47
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -458,10 +458,13 @@ export default defineComponent({
 
     ipcRenderer.on('open-file-changed', (event, arg) => {
       // This event is emitted by the main process if the user wants to exchange
-      // a file with remote changes. It already ships with the file descriptor
-      // so all we have to do is find the right file and just swap the contents.
-      // We don't need to update anything else, since that has been updated in
-      // the application's store already by the time this event arrives.
+      // a file with remote changes.
+      // If arg.force is false, we should check if local copy has also been
+      // changed. If both are changed, emit an event to ipcMain for confirming.
+      // If user confirm to change with remote version, a new 'open-file-changed'
+      // event w/ force=true will be emitted again.
+      //
+      // TODO: merge remote changes into local copy
       const file = arg.file
       const doc = this.openDocuments.get(file.path)
 
