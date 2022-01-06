@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-05 23:47
+ * LastEditTime  : 2022-01-06 09:57
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -209,7 +209,6 @@ export default defineComponent({
       const newActiveDoc = this.openDocuments.get(this.activeFile.path)
 
       if (newActiveDoc !== undefined) {
-        console.log('reuse opened file: ' + newActiveDoc.path)
         // Simply swap it
         const oldDocInfo = this.openDocuments.get(this.currentPath)
         oldDocInfo !== undefined && (oldDocInfo.workingDocState = this.zwEditor.swapDoc(newActiveDoc.workingDocState))
@@ -221,13 +220,11 @@ export default defineComponent({
         // this.$store.commit('updateTableOfContents', this.zwEditor.tableOfContents)
         this.$store.commit('activeDocumentInfo', this.zwEditor.documentInfo)
       } else if (!this.currentlyFetchingFiles.includes(this.activeFile.path)) {
-        console.log('try to fetch file content: ' + String(this.activeFile.path))
         // We have to request the document beforehand
         this.currentlyFetchingFiles.push(this.activeFile.path)
         const fetchingPath = this.activeFile.path
         ipcRenderer.invoke('application', { command: 'get-file-contents', payload: fetchingPath })
           .then((descriptorWithContent) => {
-            console.log('file content returned: ' + String(descriptorWithContent.path))
             if (this.zwEditor !== null) {
               const curDocInfo = this.openDocuments.get(this.currentPath)
               curDocInfo !== undefined && (curDocInfo.workingDocState = this.zwEditor.getDoc())
@@ -237,8 +234,7 @@ export default defineComponent({
               try {
                 this.zwEditor.swapDoc(descriptorWithContent.content)
               } catch (e) {
-                console.log('Parse from markdown string error...')
-                console.error(e)
+                console.error('Parse from markdown string error: ', e)
                 this.zwEditor.swapDoc('')
                 parseError = true
               }
