@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-06 09:57
+ * LastEditTime  : 2022-01-08 01:18
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -211,7 +211,9 @@ export default defineComponent({
       if (newActiveDoc !== undefined) {
         // Simply swap it
         const oldDocInfo = this.openDocuments.get(this.currentPath)
-        oldDocInfo !== undefined && (oldDocInfo.workingDocState = this.zwEditor.swapDoc(newActiveDoc.workingDocState))
+        if (oldDocInfo !== undefined) {
+          oldDocInfo.workingDocState = this.zwEditor.swapDoc(newActiveDoc.workingDocState, newActiveDoc.dir)
+        }
 
         this.setCurrentDoc(this.activeFile.path)
         this.zwEditor.setOptions({
@@ -232,7 +234,7 @@ export default defineComponent({
               // parse the doc content as markdown string
               let parseError = false
               try {
-                this.zwEditor.swapDoc(descriptorWithContent.content)
+                this.zwEditor.swapDoc(descriptorWithContent.content, descriptorWithContent.dir)
               } catch (e) {
                 console.error('Parse from markdown string error: ', e)
                 this.zwEditor.swapDoc('')
@@ -265,7 +267,7 @@ export default defineComponent({
                 this.$store.commit('activeDocumentInfo', this.zwEditor.documentInfo)
               } else if (curDocInfo !== undefined) {
                 console.log('active file has changed to: ' + String(this.activeFile.path) + '. Resume to current file')
-                this.zwEditor.swapDoc(curDocInfo.workingDocState)
+                this.zwEditor.swapDoc(curDocInfo.workingDocState, curDocInfo.dir)
                 this.setCurrentDoc(curDocInfo.path)
               }
             } else {
@@ -468,7 +470,8 @@ export default defineComponent({
         if (doc.modified && !arg.force) {
           ipcRenderer.send('file-change-conflict', file)
         } else {
-          doc.workingDocState = _zwEditor.updateDoc(file.content)
+          _zwEditor.swapDoc(file.content, file.dir)
+          doc.workingDocState = _zwEditor.getDoc()
           nextTick()
             .then(() => {
               // Wait a little bit for the unwanted modification-events to emit and
@@ -502,7 +505,10 @@ export default defineComponent({
   methods: {
     setCurrentDoc (curPath: string): void {
       this.currentPath = curPath
-      this.zwEditor?.swapDoc(this.openDocuments.get(this.currentPath)?.workingDocState ?? '')
+      const curDocInfo = this.openDocuments.get(this.currentPath)
+      if (curDocInfo) {
+        this.zwEditor?.swapDoc(curDocInfo.workingDocState ?? '', curDocInfo.dir)
+      }
     },
     setCurrentWorkingState: function(state: EditorState) {
       _currentWorkingState = state
@@ -753,8 +759,9 @@ export default defineComponent({
 
       // Glue it back together and set it as content
       if (this.zwEditor !== null) {
-        this.zwEditor.updateDoc(
-          '---\n' + YAML.stringify(frontmatter) + '---' + postFrontmatter + content
+        this.zwEditor.swapDoc(
+          '---\n' + YAML.stringify(frontmatter) + '---' + postFrontmatter + content,
+          curDocInfo.dir
         )
       }
     }

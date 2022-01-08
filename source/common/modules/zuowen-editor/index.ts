@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 20:46
- * LastEditTime  : 2022-01-05 22:38
+ * LastEditTime  : 2022-01-08 12:59
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -25,9 +25,11 @@ import {
   parserCtx,
   serializerCtx,
   editorStateCtx,
-  schemaCtx
+  schemaCtx,
+  viewCtx
 } from '@milkdown/core'
 import { listenerCtx } from '@milkdown/plugin-listener'
+import { updateDoc, getDoc } from './editor-utils'
 
 /**
  * UTILITY FUNCTIONS
@@ -258,11 +260,10 @@ class ZuowenEditor extends EventEmitter {
   onChange (callback: (getMarkdown: () => string) => void): void {
     this._instance.config((ctx) => {
       ctx.update(listenerCtx, listener => {
-        if (listener.markdown !== undefined) {
-          listener.markdown.push(callback)
-        } else {
-          listener.markdown = [callback]
-        }
+        listener.markdown = [
+          ...listener.markdown ?? [],
+          callback
+        ]
         return listener
       })
     })
@@ -438,74 +439,16 @@ class ZuowenEditor extends EventEmitter {
    *
    * @return  {WorkingDocState | undefined} The previous editting document instance
    */
-  swapDoc (newDoc: WorkingDocState | string): WorkingDocState {
-    let oldWorkingDocState = {} as WorkingDocState
-
-    this._instance.action((ctx) => {
-      let newState: EditorState | null | undefined
-      const view = ctx.get(editorViewCtx)
-      oldWorkingDocState.editorState = view.state
-
-      if (typeof newDoc === 'string') {
-          const parser = ctx.get(parserCtx)
-          let doc = parser(newDoc)
-          if (!doc) {
-            doc = parser('')
-            console.error('Markdown file parse error, content:"'
-                          + newDoc.slice(0, 40)
-                          + ' ..."')
-          }
-          const schema = ctx.get(schemaCtx)
-          const plugins = view.state.plugins
-          // const options = ctx.get(editorStateOptionsCtx)
-          newState = EditorState.create({
-            schema,
-            doc,
-            plugins
-          })
-      } else {
-        newState = newDoc.editorState
-      }
-
-      view.updateState(newState as EditorState)
-      ctx.set(editorStateCtx, view.state)
-    })
+  swapDoc (newDoc: WorkingDocState | string, basePath?: string): WorkingDocState {
+    let oldState = {} as EditorState
+    if (typeof newDoc === 'string') {
+      oldState = updateDoc(this._instance, newDoc, basePath)
+    } else if (newDoc.editorState) {
+      oldState = updateDoc(this._instance, newDoc.editorState, basePath)
+    }
 
     this.focus()
-    return oldWorkingDocState
-  }
-
-  /**
-   * Update the working doc with new content.
-   *
-   * @param   {string}           content  the content to be updated
-   *
-   * @return  {WorkingDocState}           the Working document instance
-   */
-  updateDoc (content: string): WorkingDocState {
-    let state = {} as EditorState 
-    const result = this._instance.action((ctx) => {
-      const parser = ctx.get(parserCtx)
-      let doc = parser(content)
-      if (!doc) {
-        doc = parser('')
-        console.error('Markdown file parse error, content:"'
-                      + doc?.slice(0, 40)
-                      + ' ..."')
-      }
-      const schema = ctx.get(schemaCtx)
-      const view = ctx.get(editorViewCtx)
-      const plugins = view.state.plugins
-      // const options = ctx.get(editorStateOptionsCtx)
-      state = EditorState.create({
-        schema,
-        doc,
-        plugins
-      })
-      view.updateState(state)
-      ctx.set(editorStateCtx, state)
-    })
-    return { editorState: state }
+    return { editorState: oldState }
   }
 
   /**
@@ -514,11 +457,7 @@ class ZuowenEditor extends EventEmitter {
    * @return  {WorkingDocState}
    */
   getDoc (): WorkingDocState {
-    return this._instance.action((ctx) => {
-      const editorState = ctx.get(editorViewCtx).state
-      ctx.set(editorStateCtx, editorState)
-      return { editorState }
-    })
+    return { editorState: getDoc(this._instance) }
   }
 
   /**
