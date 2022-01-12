@@ -1273,14 +1273,14 @@ __metadata:
     "@milkdown/core": "workspace:*"
     "@milkdown/design-system": "workspace:*"
     "@milkdown/plugin-math": "workspace:*"
-    "@milkdown/preset-gfm": "workspace:*"
     "@milkdown/prose": "workspace:*"
     "@milkdown/utils": "workspace:*"
+    preset-zwmarkdown: "workspace:*"
     tslib: ^2.3.1
   peerDependencies:
     "@milkdown/core": "*"
     "@milkdown/plugin-math": "*"
-    "@milkdown/preset-gfm": "*"
+    preset-zwmarkdown: "*"
   languageName: unknown
   linkType: soft
 
