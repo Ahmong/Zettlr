@@ -14,7 +14,15 @@
  * END HEADER
  */
 
-import { app, BrowserWindow, clipboard, FileFilter, ipcMain, MessageBoxReturnValue, nativeImage } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  clipboard,
+  FileFilter,
+  ipcMain,
+  MessageBoxReturnValue,
+  nativeImage
+} from 'electron'
 import path from 'path'
 import fs from 'fs'
 
