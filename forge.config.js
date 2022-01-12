@@ -139,7 +139,7 @@ module.exports = {
     [
       '@electron-forge/plugin-webpack',
       {
-        port: 3000,
+        port: 3001,
         loggerPort: 9001,
         devServer: {
         },

@@ -30,7 +30,7 @@ export default function preventNavigation (win: BrowserWindow): void {
       // We are in development, so we must make sure to allow webpack to
       // actually reload the windows. Webpack will always spin up devServers
       // at localhost.
-      if (url.startsWith('http://localhost:3000')) {
+      if (url.startsWith('http://localhost:300')) {
         return true
       }
     }
