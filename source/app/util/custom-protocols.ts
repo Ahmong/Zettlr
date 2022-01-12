@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-12 12:11
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -19,6 +29,7 @@ export default function registerCustomProtocols (): void {
   // https://stackoverflow.com/a/61623585/873661
   const protocolName = 'safe-file'
 
+  // TODO: restrict the requested file to config dir
   global.log.info(`Registering custom protocol ${protocolName}`)
   protocol.registerFileProtocol(protocolName, (request, callback) => {
     const url = request.url.replace(`${protocolName}://`, '')
