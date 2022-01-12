@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 23:30
- * LastEditTime  : 2022-01-08 01:42
+ * LastEditTime  : 2022-01-11 23:41
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -13,29 +13,34 @@ import {
   defaultValueCtx,
   Editor as mdEditor,
   editorStateCtx,
+  editorViewCtx,
   editorViewOptionsCtx,
   EditorViewReady,
   MilkdownPlugin,
   parserCtx,
   rootCtx,
   serializerCtx,
-  editorViewCtx,
-  viewCtx
 } from '@milkdown/core'
 import { AtomList } from '@milkdown/utils';
-import { EditorProps, EditorState } from '@milkdown/prose'
+import { AllSelection, EditorProps, EditorState, Slice } from '@milkdown/prose'
 import { clipboard } from '@milkdown/plugin-clipboard'
 import { cursor } from '@milkdown/plugin-cursor'
 import { emoji } from '@milkdown/plugin-emoji'
 import { history } from '@milkdown/plugin-history'
 import { indent } from '@milkdown/plugin-indent'
-import { ImageBasePathKey } from 'preset-zwmarkdown';
 import { listener, listenerCtx } from '@milkdown/plugin-listener'
 import { math } from '@milkdown/plugin-math'
 import { prism } from '@milkdown/plugin-prism'
 import { tablePlugin } from '@milkdown/plugin-table'
 import { tooltip } from '@milkdown/plugin-tooltip'
-import { zwmarkdown } from 'preset-zwmarkdown'
+import {
+  zwmarkdown,
+  baseDirDefault,
+  getParserOption,
+  parserOptionsCtx,
+  repoSchemeDefault,
+  setParserOption
+} from 'preset-zwmarkdown'
 import { zwnord } from 'theme-zwnord'
 
 import { ZuowenEditor } from '.'
@@ -104,40 +109,53 @@ export function toMarkdown (editor: mdEditor, state: EditorState): string {
   })
 }
 
-export function updateDoc (editor: mdEditor, content: EditorState | string, basePath?: string): EditorState {
+export function updateDoc (editor: mdEditor, content: EditorState | string, baseDir?: string): EditorState {
   return editor.action((ctx) => {
     const view = ctx.get(editorViewCtx)
     const oldState = view.state
-    let newState
+
+    console.log('try to set option: baseDir=' + baseDir)
+    if (baseDir?.length ?? 0 > 0) {
+      setParserOption(ctx, baseDir + '/', baseDirDefault)
+      const optBaseDir = getParserOption(ctx, baseDirDefault)
+      console.log('set option to: baseDir=' + optBaseDir)
+    }
+
     if (typeof content === 'string') {
       const parser = ctx.get(parserCtx)
       let doc = parser(content)
       if (!doc) {
         doc = parser('')
         console.error('Markdown file parse error, content:"'
-                      + doc?.slice(0, 40)
+                      + doc?.slice(0, 40).toJSON
                       + ' ..."')
       }
-      const view = ctx.get(editorViewCtx)
-      let state = EditorState.create({
-        doc,
-        plugins: view.state.plugins
-      })
-      newState = state.apply(state.tr.setMeta(ImageBasePathKey, basePath ?? ''))
-      view.updateState(newState)
-      ctx.set(editorStateCtx, newState)
+      if (doc) {
+        let newState = oldState.apply(oldState.tr.setSelection(new AllSelection(oldState.doc)))
+        newState = newState.apply(newState.tr.replaceSelectionWith(doc,  false))
+        view.updateState(newState)
+        ctx.set(editorStateCtx, newState)
+      }
     } else {
-      newState = view.updateState(content)
+      view.updateState(content)
+      ctx.set(editorStateCtx, view.state)
     }
-    if (newState) ctx.set(editorStateCtx, newState)
     return oldState
   })
 }
 
-export function getDoc (mdEditor: mdEditor): EditorState {
-  return mdEditor.action((ctx) => {
+export function getDoc (editor: mdEditor): EditorState {
+  return editor.action((ctx) => {
     const state = ctx.get(editorViewCtx).state
     ctx.set(editorStateCtx, state)
     return state
+  })
+}
+
+export function setRepoScheme (editor: mdEditor, scheme: string) {
+  return editor.action((ctx) => {
+    if (scheme?.length > 0) {
+      setParserOption(ctx, scheme, repoSchemeDefault)
+    }
   })
 }

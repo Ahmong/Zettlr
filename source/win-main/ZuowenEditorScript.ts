@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-08 01:18
+ * LastEditTime  : 2022-01-11 23:57
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -26,6 +26,8 @@ import {
 } from '@milkdown/prose'
 
 const ipcRenderer = (window as any).ipc as Electron.IpcRenderer
+
+const REPO_REQUEST_SCHEME = 'repo'
 
 interface OpenDocInfo {
   path: string
@@ -408,6 +410,8 @@ export default defineComponent({
     // init the underline milkdown editor.
     // All configuration to the milkdown should before the init()
     _zwEditor.init()
+
+    _zwEditor.setRepoScheme(REPO_REQUEST_SCHEME)
 
     // Listener of zwEditor
     //

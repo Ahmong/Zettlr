@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 20:46
- * LastEditTime  : 2022-01-08 12:59
+ * LastEditTime  : 2022-01-11 23:57
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -20,16 +20,11 @@ import {
 } from '@milkdown/prose'
 import {
   Editor as mdEditor,
-  editorStateOptionsCtx,
   editorViewCtx,
-  parserCtx,
   serializerCtx,
-  editorStateCtx,
-  schemaCtx,
-  viewCtx
 } from '@milkdown/core'
 import { listenerCtx } from '@milkdown/plugin-listener'
-import { updateDoc, getDoc } from './editor-utils'
+import { updateDoc, getDoc, setRepoScheme } from './editor-utils'
 
 /**
  * UTILITY FUNCTIONS
@@ -422,14 +417,15 @@ class ZuowenEditor extends EventEmitter {
   }
   */
 
-  dispatchTransaction (tr: Transaction): EditorState {
-    return this._instance.action((ctx) => {
-      const view = ctx.get(editorViewCtx)
-      const newState = view.state.apply(tr)
-      view.updateState(newState)
-      ctx.set(editorStateCtx, newState)
-      return newState
-    })
+  /**
+   * set scheme string for editor to request local file
+   *
+   * @param   {string}  scheme  scheme used for repo request
+   *
+   * @return  {[void]}
+   */
+  setRepoScheme (scheme: string): void {
+    setRepoScheme(this._instance, scheme)
   }
 
   /**
@@ -439,12 +435,12 @@ class ZuowenEditor extends EventEmitter {
    *
    * @return  {WorkingDocState | undefined} The previous editting document instance
    */
-  swapDoc (newDoc: WorkingDocState | string, basePath?: string): WorkingDocState {
+  swapDoc (newDoc: WorkingDocState | string, baseDir?: string): WorkingDocState {
     let oldState = {} as EditorState
     if (typeof newDoc === 'string') {
-      oldState = updateDoc(this._instance, newDoc, basePath)
+      oldState = updateDoc(this._instance, newDoc, baseDir)
     } else if (newDoc.editorState) {
-      oldState = updateDoc(this._instance, newDoc.editorState, basePath)
+      oldState = updateDoc(this._instance, newDoc.editorState, baseDir)
     }
 
     this.focus()

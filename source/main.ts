@@ -13,7 +13,7 @@
  * END HEADER
  */
 
-import { app } from 'electron'
+import { app, protocol } from 'electron'
 import path from 'path'
 import { bootApplication, shutdownApplication } from './app/lifecycle'
 
@@ -119,6 +119,22 @@ let zettlr: Zettlr|null = null
  */
 let canQuit: boolean = false
 
+// TODO: move to a setting file common to both ipcMain & ipcRender
+const REPO_REQUEST_SCHEME = 'repo'
+const protocolName = REPO_REQUEST_SCHEME
+const protocolStr = REPO_REQUEST_SCHEME + '://'
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: protocolName,
+    privileges: {
+      standard: false,
+      bypassCSP: true,
+      supportFetchAPI: true
+    }
+  }
+])
+
 /**
  * Hook into the ready event and initialize the main object creating everything
  * else. It is necessary to wait for the ready event, because prior, some APIs
@@ -158,6 +174,23 @@ app.whenReady().then(() => {
     console.error(err)
     app.exit(1)
   })
+
+  // register a custom protocol for requests from editor for local files (img etc.)
+  protocol.registerFileProtocol(protocolName, (request, callback) => {
+    global.log.info('request for repo: ' + JSON.stringify(request))
+    const url = decodeURIComponent(request.url).replace(protocolStr, '')
+    global.log.info('request url: ' + url)
+    try {
+      return callback({
+        path: url,
+        // Prevent that local files are cached
+        headers: { 'Cache-control': 'no-store', 'pragma': 'no-cache' }
+      })
+    } catch (e) {
+      global.log.error('Error loading file:' + JSON.stringify(e), e)
+    }
+  })
+
 }).catch(e => console.error(e))
 
 /**
