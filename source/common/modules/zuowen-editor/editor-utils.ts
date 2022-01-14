@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 23:30
- * LastEditTime  : 2022-01-11 23:41
+ * LastEditTime  : 2022-01-14 12:50
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -22,7 +22,7 @@ import {
   serializerCtx,
 } from '@milkdown/core'
 import { AtomList } from '@milkdown/utils';
-import { AllSelection, EditorProps, EditorState, Slice } from '@milkdown/prose'
+import { AllSelection, EditorProps, EditorState, TextSelection } from '@milkdown/prose'
 import { clipboard } from '@milkdown/plugin-clipboard'
 import { cursor } from '@milkdown/plugin-cursor'
 import { emoji } from '@milkdown/plugin-emoji'
@@ -131,9 +131,25 @@ export function updateDoc (editor: mdEditor, content: EditorState | string, base
                       + ' ..."')
       }
       if (doc) {
-        let newState = oldState.apply(oldState.tr.setSelection(new AllSelection(oldState.doc)))
-        newState = newState.apply(newState.tr.replaceSelectionWith(doc,  false))
+        let tr = oldState.tr
+                  .setSelection(new AllSelection(oldState.doc))
+                  .deleteSelection()
+                  .setMeta('NoUpdateEvent', true)
+        view.dispatch(tr)
+
+        let newState = view.state
+        tr = newState.tr
+              .setSelection(new AllSelection(newState.doc))
+              .replaceSelectionWith(doc)
+              .setMeta('NoUpdateEvent', true)
+        newState = newState.apply(tr)
+
+        tr = newState.tr
+              .setSelection(TextSelection.create(newState.doc, 1)).scrollIntoView() 
+              .scrollIntoView()
+        newState = newState.apply(tr)
         view.updateState(newState)
+
         ctx.set(editorStateCtx, newState)
       }
     } else {
