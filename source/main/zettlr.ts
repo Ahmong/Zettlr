@@ -231,6 +231,10 @@ export default class Zettlr {
         }).catch(e => global.log.error(e.message, e)) // END ask replace file
     })
 
+    this._windowManager.on('focus-in-editor', () => {
+      broadcastIpcMessage('focus-in-editor')
+    })
+
     this._windowManager.on('main-window-closed', () => {
       // Reset the FSAL state history so that any new window will have a clean start
       this._fsal.resetFiletreeHistory()

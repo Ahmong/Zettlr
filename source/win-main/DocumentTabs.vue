@@ -238,6 +238,7 @@ export default {
         // perform this action on a right-click (button === 2), but that event
         // must be handled by the container).
         this.selectFile(file)
+        ipcRenderer.send('focus-in-editor')
       }
     },
     selectFile: function (file) {

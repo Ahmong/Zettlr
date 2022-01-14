@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 20:46
- * LastEditTime  : 2022-01-11 23:57
+ * LastEditTime  : 2022-01-14 12:41
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -39,6 +39,7 @@ import safeAssign from '../../util/safe-assign'
  */
 import { EventEmitter } from 'events'
 // import { Transaction } from 'electron'
+const ipcRenderer = (window as any).ipc as Electron.IpcRenderer
 
 // type EditorViewOptions = Omit<ConstructorParameters<typeof EditorView>[1], 'state'>
 
@@ -95,9 +96,9 @@ class ZuowenEditor extends EventEmitter {
    * @param   {HTMLElement|string}  anchorElement   The anchor element (either a DOM node or an ID to be used with document.getElementById)
    * @param   {Object}          [cmOptions={}]  If no object is provided, the instance will be instantiated with default options.
    */
-  constructor (
-    anchorElement: HTMLElement | string,
-    zwOptions: ZuowenEditorOptions) {
+  constructor ( anchorElement: HTMLElement | string,
+                zwOptions: ZuowenEditorOptions) {
+
     super() // Set up the event emitter
 
     // Parse the anchorElement until we get something useful
@@ -113,12 +114,8 @@ class ZuowenEditor extends EventEmitter {
     // this._instance = CodeMirror.fromTextArea(this._anchorElement, this._cmOptions)
     this._instance = createEditor(this._anchorElement)
 
-    // Register the readonly handler for editorble prop
+    // Set prosemirror options
     setEditorViewOptions(this._instance, zwOptions.prosemirror)
-
-
-    // Immediately afterwards, set the new options passed to overwrite
-    // this.setOptions(cmOptions)
 
     // Set the special CodeMirror-readonly class on the wrapper, because each
     // editor instance is readonly initially, and needs to be enabled
@@ -126,6 +123,16 @@ class ZuowenEditor extends EventEmitter {
     /*
     this._instance.getWrapperElement().classList.add('CodeMirror-readonly')
     */
+
+    const self = this
+    this._anchorElement?.addEventListener('click', (ev) => {
+      const hasFocus = self._instance.action((ctx) => {
+        return ctx.get(editorViewCtx).hasFocus()
+      })
+      if (!hasFocus) {
+        ipcRenderer.send('focus-in-editor')
+      }
+    })
 
     // Indicate interactive elements while either the Command or Control-key is
     // held down.
@@ -485,8 +492,7 @@ class ZuowenEditor extends EventEmitter {
   focus (): void {
     this._instance.action((ctx) => {
       const editorView = ctx.get(editorViewCtx)
-
-      editorView.focus()
+      if (!editorView.hasFocus()) editorView.focus()
     })
   }
 

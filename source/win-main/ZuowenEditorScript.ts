@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-11 23:57
+ * LastEditTime  : 2022-01-14 12:46
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -59,6 +59,7 @@ export default defineComponent({
   data: function () {
     return {
       editor: null,
+      willFocus: false,
       // openDocuments: new Map<string, OpenDocInfo>(), // Contains all loaded documents if applicable
       currentlyFetchingFiles: [] as string[], // Contains the paths of files that are right now being fetched
       // Should we perform a regexp search?
@@ -444,6 +445,16 @@ export default defineComponent({
     // save to editors selfly
     _editors.set(this, _zwEditor)
 
+    ipcRenderer.on('focus-in-editor', () => {
+      if (!this.willFocus) {
+        this.willFocus = true
+        this.$nextTick().then( () => {
+          this.willFocus = false
+          _zwEditor.focus()
+        })
+      }
+    })
+
     // Listen to shortcuts from the main process
     ipcRenderer.on('shortcut', (event, shortcut) => {
       if (shortcut === 'save-file' && this.currentPath.length > 0) {
@@ -685,22 +696,20 @@ export default defineComponent({
         scroller.scrollTop += event.deltaY
       }
     },
+    editorFocus () {
+      ipcRenderer.send('focus-in-editor')
+    },
     /**
      * Triggers when the user presses any mouse button
      *
      * @param   {MouseEvent}  event  The mouse event
      */
     editorMousedown (event: MouseEvent) {
-      /*
-      // start selecting lines only if we are on the left margin and the left mouse button is pressed
       if (event.target !== this.$refs.editor || event.button !== 0) {
         return
       }
-
-      // set the start point of the selection to be where the mouse was clicked
-      this.anchor = this.zwEditor.codeMirror.coordsChar({ left: event.pageX, top: event.pageY })
-      this.zwEditor.codeMirror.setSelection(this.anchor)
-      */
+      // focus in editor-area if click outside it
+      ipcRenderer.send('focus-in-editor')
     },
 
     editorMousemove (event: MouseEvent) {

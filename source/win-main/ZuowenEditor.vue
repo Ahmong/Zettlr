@@ -21,6 +21,7 @@
     v-on:mousedown="editorMousedown($event)"
     v-on:mouseup="editorMouseup($event)"
     v-on:mousemove="editorMousemove($event)"
+    v-on:focus="editorFocus($event)"
   >
     <div v-show="showSearch" id="editor-search">
       <div class="row">

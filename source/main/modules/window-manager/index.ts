@@ -197,6 +197,10 @@ export default class WindowManager extends EventEmitter {
       this.emit('file-change-conflict', message)
     })
 
+    ipcMain.on('focus-in-editor', async () => {
+      this.emit('focus-in-editor')
+    })
+
     /**
      * Handle incoming requests for files (on the operating system). This request
      * can be made by any renderer process. The window manager will prompt the
@@ -311,6 +315,10 @@ export default class WindowManager extends EventEmitter {
       // The window has been closed -> dereference
       this._mainWindow = null
       this.emit('main-window-closed')
+    })
+
+    this._mainWindow.on('focus', () => {
+      this.emit('focus-in-editor')
     })
   }
 
