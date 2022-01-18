@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-14 12:46
+ * LastEditTime  : 2022-01-19 00:58
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -219,9 +219,6 @@ export default defineComponent({
         }
 
         this.setCurrentDoc(this.activeFile.path)
-        this.zwEditor.setOptions({
-          zettlr: { markdownImageBasePath: this.activeFile.dir }
-        })
         // this.$store.commit('updateTableOfContents', this.zwEditor.tableOfContents)
         this.$store.commit('activeDocumentInfo', this.zwEditor.documentInfo)
       } else if (!this.currentlyFetchingFiles.includes(this.activeFile.path)) {
@@ -260,9 +257,6 @@ export default defineComponent({
               // If it has, don't overwrite the current one
               if (this.activeFile.path === descriptorWithContent.path) {
                 console.log('same active file still there')
-                this.zwEditor.setOptions({
-                  zettlr: { markdownImageBasePath: this.activeFile.dir }
-                })
                 this.setCurrentDoc(newDoc.path)
 
                 // this.zwEditor.swapDoc(newDoc.workingDocState)
@@ -485,8 +479,14 @@ export default defineComponent({
         if (doc.modified && !arg.force) {
           ipcRenderer.send('file-change-conflict', file)
         } else {
-          _zwEditor.swapDoc(file.content, file.dir)
-          doc.workingDocState = _zwEditor.getDoc()
+          const curDocInfo = this.openDocuments.get(this.currentPath)
+          curDocInfo !== undefined && (curDocInfo.workingDocState = _zwEditor.swapDoc(file.content, file.dir))
+          if (this.currentPath !== file.path) {
+            // swap the view back to current doc
+            doc.workingDocState = _zwEditor.swapDoc(curDocInfo?.workingDocState ?? '', curDocInfo?.dir)
+          } else {
+            doc.workingDocState = _zwEditor.getDoc()
+          }
           nextTick()
             .then(() => {
               // Wait a little bit for the unwanted modification-events to emit and
@@ -520,10 +520,6 @@ export default defineComponent({
   methods: {
     setCurrentDoc (curPath: string): void {
       this.currentPath = curPath
-      const curDocInfo = this.openDocuments.get(this.currentPath)
-      if (curDocInfo) {
-        this.zwEditor?.swapDoc(curDocInfo.workingDocState ?? '', curDocInfo.dir)
-      }
     },
     setCurrentWorkingState: function(state: EditorState) {
       _currentWorkingState = state
