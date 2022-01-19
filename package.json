@@ -29,6 +29,7 @@
     "build:md-zweditor": "yarn workspaces foreach -vp --include '{theme-zwnord,preset-zwmarkdown}' run build",
     "build:milkdown": "yarn build:md-core && yarn build:md-plugins && yarn build:md-zweditor",
     "build:packs": "yarn build:prosemirror && yarn build:milkdown",
+    "build:work": "yarn workspaces foreach -vp --include '{@milkdown/plugin-tooltip,preset-zwmarkdown}' run build",
     "package": "cross-env NODE_ENV=production electron-forge package",
     "package:mac-x64": "cross-env NODE_ENV=production electron-forge package --platform=darwin --arch=x64",
     "package:mac-arm": "cross-env NODE_ENV=production electron-forge package --platform=darwin --arch=arm64",
