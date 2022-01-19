@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-15 22:44
- * LastEditTime  : 2022-01-19 00:58
+ * LastEditTime  : 2022-01-19 17:31
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -381,6 +381,7 @@ export default defineComponent({
         const delay = (this.autoSave === 'immediately') ? 250 : 5000
 
         curDocInfo.saveTimeout = setTimeout(() => {
+          curDocInfo.workingDocState = _zwEditor.getDoc()
           this.save(curDocInfo).catch(e => console.error(e))
           curDocInfo.saveTimeout = undefined
         }, delay)
@@ -453,7 +454,10 @@ export default defineComponent({
     ipcRenderer.on('shortcut', (event, shortcut) => {
       if (shortcut === 'save-file' && this.currentPath.length > 0) {
         const curDocInfo = this.openDocuments.get(this.currentPath)
-        curDocInfo !== undefined && (this.save(curDocInfo).catch(e => console.error(e)))
+        if (curDocInfo) {
+          curDocInfo.workingDocState = _zwEditor.getDoc()
+          this.save(curDocInfo).catch(e => console.error(e))
+        }
       } else if (shortcut === 'copy-as-html') {
         _zwEditor.copyAsHTML()
       } else if (shortcut === 'paste-as-plain') {
@@ -508,6 +512,11 @@ export default defineComponent({
         pathList = [...this.openDocuments.keys()]
       }
 
+      if (pathList.includes(this.currentPath)) {
+        const curDocInfo = this.openDocuments.get(this.currentPath)
+        curDocInfo !== undefined && (curDocInfo.workingDocState = _zwEditor.getDoc())
+      }
+
       const docsToSave = [...this.openDocuments.values()].filter(doc => pathList.includes(doc.path))
 
       let promises = [] as Array<Promise<void>>
@@ -517,6 +526,7 @@ export default defineComponent({
       void Promise.all(promises)
     })
   },
+
   methods: {
     setCurrentDoc (curPath: string): void {
       this.currentPath = curPath
@@ -589,6 +599,7 @@ export default defineComponent({
       }
 
       // Everything worked out, so clean up
+      doc.modified = false
       this.$store.dispatch('regenerateTagSuggestions').catch(e => console.error(e))
       this.$store.commit('announceModifiedFile', {
         filePath: doc.path,
