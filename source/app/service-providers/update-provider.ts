@@ -60,7 +60,7 @@ export default class UpdateProvider {
        */
       check: async () => {
         global.log.info('[Update Provider] Checking for application updates ...')
-        await this._check()
+        // await this._check()
       },
       /**
        * Checks if there is a new update available. Must be called after check()

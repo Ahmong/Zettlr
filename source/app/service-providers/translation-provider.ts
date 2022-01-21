@@ -128,6 +128,7 @@ export default class TranslationProvider {
 
     const langList = toUpdate.map(elem => trans(`dialog.preferences.app_lang.${elem.bcp47}`)).join(', ')
 
+    /*
     global.log.info(`[Translation Provider] Updating translations for ${langList} ...`)
 
     // At this moment, we should have all languages.
@@ -139,6 +140,7 @@ export default class TranslationProvider {
 
     // Now we are done and can notify the user of all updated translations!
     global.notify.normal(trans('dialog.preferences.translations.updated', langList))
+    */
   }
 
   /**
