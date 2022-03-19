@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-22 23:54
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -15,13 +25,14 @@
  * END HEADER
  */
 
-import { Candidate } from './find-lang-candidates'
 import path from 'path'
-import * as bcp47 from 'bcp-47/index.js'
 import fs from 'fs'
+import * as bcp47 from 'bcp-47/index.js'
 import { app } from 'electron'
 import isDir from './is-dir'
 import isFile from './is-file'
+import { Candidate } from './find-lang-candidates'
+import { getStaticDir } from './get-static-dir'
 
 export interface DictFileMetadata {
   aff: string
@@ -33,7 +44,11 @@ export interface DictFileMetadata {
  * @param  {Array} [paths=[]] An array of paths to be searched. Defaults to standard paths.
  * @return {Array}       An array containing metadata for all found dictionaries.
  */
-export default function enumDictFiles (paths = [ path.join(app.getPath('userData'), '/dict'), path.join(__dirname, 'dict') ]): Array<Candidate & DictFileMetadata> {
+export default function enumDictFiles (
+    paths = [
+      path.join(app.getPath('userData'), '/dict'),
+      path.join(getStaticDir(__dirname), 'dict')
+    ]): Array<Candidate & DictFileMetadata> {
   let candidates: Array<Candidate & DictFileMetadata> = []
 
   for (let p of paths) {

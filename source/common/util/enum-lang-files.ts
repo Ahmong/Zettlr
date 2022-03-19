@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2022-01-22 02:42
+ * LastEditTime  : 2022-03-19 15:09
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -15,12 +25,14 @@
  * END HEADER
  */
 
-import { Candidate } from './find-lang-candidates'
 import path from 'path'
-import * as bcp47 from 'bcp-47/index.js'
 import fs from 'fs'
-import isFile from './is-file'
 import { app } from 'electron'
+
+import { Candidate } from './find-lang-candidates'
+import * as bcp47 from 'bcp-47/index.js'
+import isFile from './is-file'
+import { getStaticDir } from './get-static-dir'
 
 export interface LangFileMetadata {
   path: string
@@ -31,7 +43,11 @@ export interface LangFileMetadata {
  * @param  {Array} [paths=[]] An array of paths to search for. Optional.
  * @return {Array}       An array containing metadata for all found files.
  */
-export default function enumLangFiles (paths = [ path.join(app.getPath('userData'), '/lang'), path.join(__dirname, '/lang') ]): Array<Candidate & LangFileMetadata> {
+export default function enumLangFiles (
+    paths = [
+      path.join(app.getPath('userData'), '/lang'),
+      path.join(getStaticDir(__dirname), '/lang')
+    ]): Array<Candidate & LangFileMetadata> {
   // Now go through all search paths and enumerate all available files of interest
   let candidates = []
   for (const p of paths) {

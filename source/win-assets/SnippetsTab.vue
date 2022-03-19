@@ -69,11 +69,11 @@
  * END HEADER
  */
 
-import SplitView from '../common/vue/window/SplitView'
-import SelectableList from '../common/vue/form/elements/SelectableList'
+import SplitView from '../common/vue/window/SplitView.vue'
+import SelectableList from '../common/vue/form/elements/SelectableList.vue'
 import ButtonControl from '../common/vue/form/elements/Button.vue'
 import TextControl from '../common/vue/form/elements/Text.vue'
-import CodeEditor from '../common/vue/CodeEditor'
+import CodeEditor from '../common/vue/CodeEditor.vue'
 import { trans } from '../common/i18n-renderer'
 
 const ipcRenderer = window.ipc

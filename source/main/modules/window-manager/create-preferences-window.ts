@@ -13,6 +13,7 @@
  * END HEADER
  */
 
+import path from 'path'
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions
@@ -29,6 +30,15 @@ import { WindowPosition } from './types'
  * @return  {BrowserWindow}           The loaded print window
  */
 export default function createPreferencesWindow (conf: WindowPosition): BrowserWindow {
+  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+
+  const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
+    ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_PREFERENCES_ENTRY
+    : new URL('../render/win-preferences/index.html', 'file://' + __dirname).toString();
+
+  global.log.info(`preloadUrl=${preloadUrl}`)
+  global.log.info(`pageUrl=${pageUrl}`)
+
   const winConf: BrowserWindowConstructorOptions = {
     acceptFirstMouse: true,
     minWidth: 300,
@@ -42,7 +52,7 @@ export default function createPreferencesWindow (conf: WindowPosition): BrowserW
     fullscreenable: false,
     webPreferences: {
       contextIsolation: true,
-      preload: PREFERENCES_PRELOAD_WEBPACK_ENTRY
+      preload: preloadUrl
     }
   }
 
@@ -52,9 +62,9 @@ export default function createPreferencesWindow (conf: WindowPosition): BrowserW
   const window = new BrowserWindow(winConf)
 
   // Load the index.html of the app.
-  window.loadURL(PREFERENCES_WEBPACK_ENTRY)
+  window.loadURL(pageUrl)
     .catch(e => {
-      global.log.error(`Could not load URL ${PREFERENCES_WEBPACK_ENTRY}: ${e.message as string}`, e)
+      global.log.error(`Could not load URL ${pageUrl}: ${e.message as string}`, e)
     })
 
   // EVENT LISTENERS

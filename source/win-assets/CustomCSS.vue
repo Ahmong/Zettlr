@@ -32,8 +32,8 @@
  */
 
 import { trans } from '../common/i18n-renderer'
-import CodeEditor from '../common/vue/CodeEditor'
-import ButtonControl from '../common/vue/form/elements/Button'
+import CodeEditor from '../common/vue/CodeEditor.vue'
+import ButtonControl from '../common/vue/form/elements/Button.vue'
 
 const ipcRenderer = window.ipc
 

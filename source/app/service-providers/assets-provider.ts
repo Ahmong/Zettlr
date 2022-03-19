@@ -18,6 +18,7 @@ import { app, ipcMain } from 'electron'
 import { promises as fs } from 'fs'
 import YAML from 'yaml'
 import broadcastIpcMessage from '../../common/util/broadcast-ipc-message'
+import { getStaticDir } from '../../common/util/get-static-dir'
 
 export default class AssetsProvider {
   /**
@@ -47,7 +48,7 @@ export default class AssetsProvider {
       },
       // This one simply returns all filter in the filter directory.
       getAllFilters: async () => {
-        const files = await fs.readdir(path.join(__dirname, './assets/lua-filter'))
+        const files = await fs.readdir(path.join(getStaticDir(__dirname), './assets/lua-filter'))
         const filter = files.filter(file => /\.lua$/.test(file))
         return filter.map(file => path.join(this._filterPath, file))
       }
@@ -86,7 +87,7 @@ export default class AssetsProvider {
     // Required are those defaults files which are in the assets/defaults directory
     // and correspond to the format (import|export).(writer|reader).yaml
 
-    const defaultsFiles = await fs.readdir(path.join(__dirname, './assets/defaults'))
+    const defaultsFiles = await fs.readdir(path.join(getStaticDir(__dirname), './assets/defaults'))
     const defaults = defaultsFiles.filter(file => /^(?:import|export)\..+?\.yaml$/.test(file))
     for (const file of defaults) {
       const absolutePath = path.join(this._defaultsPath, file)
@@ -94,12 +95,12 @@ export default class AssetsProvider {
         await fs.lstat(absolutePath)
       } catch (err) {
         global.log.warning(`[Assets Provider] Required defaults file ${file} not found. Copying ...`)
-        await fs.copyFile(path.join(__dirname, './assets/defaults', file), absolutePath)
+        await fs.copyFile(path.join(getStaticDir(__dirname), './assets/defaults', file), absolutePath)
       }
     }
 
     // Next, do the same for the filters
-    const filterFiles = await fs.readdir(path.join(__dirname, './assets/lua-filter'))
+    const filterFiles = await fs.readdir(path.join(getStaticDir(__dirname), './assets/lua-filter'))
     const filters = filterFiles.filter(file => /\.lua$/.test(file))
     for (const file of filters) {
       const absolutePath = path.join(this._filterPath, file)
@@ -107,14 +108,14 @@ export default class AssetsProvider {
         // If the file doesn't exist, lstat will throw an error. Otherwise, check
         // that the filter shipped with this version is newer. If so, replace.
         const existingStat = await fs.lstat(absolutePath)
-        const newStat = await fs.lstat(path.join(__dirname, './assets/lua-filter', file))
+        const newStat = await fs.lstat(path.join(getStaticDir(__dirname), './assets/lua-filter', file))
         if (newStat.mtimeMs > existingStat.mtimeMs) {
           global.log.warning(`[Assets Provider] Found outdated filter ${file}; copying ...`)
-          await fs.copyFile(path.join(__dirname, './assets/lua-filter', file), absolutePath)
+          await fs.copyFile(path.join(getStaticDir(__dirname), './assets/lua-filter', file), absolutePath)
         }
       } catch (err) {
         global.log.warning(`[Assets Provider] Required filter ${file} not found. Copying ...`)
-        await fs.copyFile(path.join(__dirname, './assets/lua-filter', file), absolutePath)
+        await fs.copyFile(path.join(getStaticDir(__dirname), './assets/lua-filter', file), absolutePath)
       }
     }
   }
@@ -176,7 +177,7 @@ export default class AssetsProvider {
    */
   async restoreDefaultsFor (format: string, type: 'export'|'import'): Promise<boolean> {
     const file = `${type}.${format}.yaml`
-    const source = path.join(__dirname, './assets/defaults', file)
+    const source = path.join(getStaticDir(__dirname), './assets/defaults', file)
     const target = path.join(this._defaultsPath, file)
 
     try {

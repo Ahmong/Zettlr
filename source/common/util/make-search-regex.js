@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:39
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -19,7 +29,7 @@
  *
  * @return {RegExp}                    The regular expression
  */
-module.exports = function (term, injectFlags = []) {
+export default function (term, injectFlags = []) {
   let re = {}
 
   // For ease of access you can simply pass the injectFlags as a string of characters

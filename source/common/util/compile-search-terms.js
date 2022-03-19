@@ -16,7 +16,7 @@
  * END HEADER
  */
 
-module.exports = function (term) {
+export default function (term) {
   // First sanitize the terms
   let myTerms = []
   let curWord = ''

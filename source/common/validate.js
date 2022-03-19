@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-22 01:00
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -12,11 +22,12 @@
  * END HEADER
  */
 
-const ZettlrValidation = require('./zettlr-validation.js')
-const VALIDATE_PROPERTIES = Object.keys(require('./validation.json'))
-const VALIDATE_RULES = Object.values(require('./validation.json'))
+import ZettlrValidation from './zettlr-validation.js'
+import validation from './validation.json'
+const VALIDATE_PROPERTIES = Object.keys(validation)
+const VALIDATE_RULES = Object.values(validation)
 
-module.exports = function (data) {
+export default function (data) {
   // Validate the given form data.
   if (data === undefined) {
     throw new Error('No data given!')

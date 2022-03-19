@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:35
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -21,7 +31,7 @@
  *
  * @returns {any|undefined}           Either an object with the correct hash, or undefined.
  */
-module.exports = function findObject (tree, prop, val, traverse) {
+export default function findObject (tree, prop, val, traverse) {
   // Is the tree even defined?
   if (tree == null) {
     return undefined

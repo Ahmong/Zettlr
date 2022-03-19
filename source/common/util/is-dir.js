@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-22 02:23
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -11,14 +21,14 @@
  * END HEADER
  */
 
-const fs = require('fs')
+ const fs = require('fs')
 
 /**
  * Checks if a given path is a valid directory
  * @param  {String}  p The path to check
  * @return {Boolean}   True, if p is valid and also a directory
  */
-module.exports = function (p) {
+export default function (p) {
   try {
     let s = fs.lstatSync(p)
     return s.isDirectory()

@@ -20,6 +20,7 @@ import { trans } from '../../common/i18n-main'
 import moment from 'moment'
 import enumDictFiles from '../../common/util/enum-dict-files'
 import enumLangFiles from '../../common/util/enum-lang-files'
+import { getStaticDir } from '../../common/util/get-static-dir'
 
 const TRANSLATION_API_URL = 'https://translate.zettlr.com/api/languages'
 
@@ -161,7 +162,11 @@ export default class TranslationProvider {
    * @param  {Array}  [paths=[ __dirname,    path.join(app.getPath('userData'] Paths to be searched for
    * @return {Array}          An array containing the language metadata (keys = bcp-47 tags)
    */
-  private async _getTranslationMetadata (paths = [ path.join(app.getPath('userData'), '/lang'), path.join(__dirname, '/lang') ]): Promise<any> {
+  private async _getTranslationMetadata (
+      paths = [
+        path.join(app.getPath('userData'), '/lang'),
+        path.join(getStaticDir(__dirname), '/lang')
+      ]): Promise<any> {
     let metadata = []
 
     // First get all translations available

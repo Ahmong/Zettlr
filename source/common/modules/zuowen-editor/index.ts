@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 20:46
- * LastEditTime  : 2022-01-14 12:41
+ * LastEditTime  : 2022-01-20 01:29
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -43,7 +43,7 @@ const ipcRenderer = (window as any).ipc as Electron.IpcRenderer
 
 // type EditorViewOptions = Omit<ConstructorParameters<typeof EditorView>[1], 'state'>
 
-interface WorkingDocState {
+export interface WorkingDocState {
   editorState: EditorState | null
   docChange?: boolean
   // editorViewOptions: typeof editorViewOptionsCtx
@@ -52,7 +52,7 @@ interface WorkingDocState {
 // const ipcRenderer = (window as any).ipc as Electron.IpcRenderer
 // const clipboard = (window as any).clipboard as Electron.Clipboard
 
-class ZuowenEditor extends EventEmitter {
+export class ZuowenEditor extends EventEmitter {
   /**
    * Holds the actual Milkdown instance
    *
@@ -789,5 +789,3 @@ class ZuowenEditor extends EventEmitter {
     return this._instance
   }
 }
-
-export { ZuowenEditor, WorkingDocState }

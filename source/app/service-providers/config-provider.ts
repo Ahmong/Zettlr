@@ -25,6 +25,7 @@ import broadcastIpcMessage from '../../common/util/broadcast-ipc-message'
 import RULES from '../../common/validation.json'
 import getConfigTemplate from './assets/get-config-template'
 import enumDictFiles from '../../common/util/enum-dict-files'
+import { getStaticDir } from '../../common/util/get-static-dir'
 
 const ZETTLR_VERSION = app.getVersion()
 

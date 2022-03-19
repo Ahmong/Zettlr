@@ -16,6 +16,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions
 } from 'electron'
+import path from 'path'
 import attachLogger from './attach-logger'
 import preventNavigation from './prevent-navigation'
 import setWindowChrome from './set-window-chrome'
@@ -29,6 +30,13 @@ import { WindowPosition } from './types'
  * @return  {BrowserWindow}           The loaded print window
  */
 export default function createPrintWindow (file: string, conf: WindowPosition): BrowserWindow {
+
+  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+
+  const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
+    ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_PRINT_ENTRY
+    : new URL('../render/win-print/index.html', 'file://' + __dirname).toString();
+
   const winConf: BrowserWindowConstructorOptions = {
     acceptFirstMouse: true,
     minWidth: 300,
@@ -42,7 +50,7 @@ export default function createPrintWindow (file: string, conf: WindowPosition): 
       contextIsolation: true,
       // We are loading an iFrame with a local resource, so we must disable webSecurity for this window
       webSecurity: false,
-      preload: PRINT_PRELOAD_WEBPACK_ENTRY
+      preload: preloadUrl
     }
   }
 
@@ -51,7 +59,7 @@ export default function createPrintWindow (file: string, conf: WindowPosition): 
 
   const window = new BrowserWindow(winConf)
 
-  const effectiveUrl = new URL(PRINT_WEBPACK_ENTRY)
+  const effectiveUrl = new URL(pageUrl)
   // Add the print preview file to the search params
   effectiveUrl.searchParams.append('file', file)
 
@@ -59,7 +67,7 @@ export default function createPrintWindow (file: string, conf: WindowPosition): 
   // The variable PRINT_WEBPACK_ENTRY is automatically resolved by electron forge / webpack
   window.loadURL(effectiveUrl.toString())
     .catch(e => {
-      global.log.error(`Could not load URL ${PRINT_WEBPACK_ENTRY}: ${e.message as string}`, e)
+      global.log.error(`Could not load URL ${pageUrl}: ${e.message as string}`, e)
     })
 
   // EVENT LISTENERS

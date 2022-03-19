@@ -1,4 +1,15 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-03-18 22:49
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : '头部注释'
+ * ---
+ * FilePath      : /source/main/modules/window-manager/create-paste-image-modal.ts
+**/
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -17,6 +28,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions
 } from 'electron'
+import path from 'path'
 import attachLogger from './attach-logger'
 import preventNavigation from './prevent-navigation'
 import setWindowChrome from './set-window-chrome'
@@ -28,6 +40,13 @@ import setWindowChrome from './set-window-chrome'
  * @return  {BrowserWindow}           The loaded print window
  */
 export default function createPasteImageModal (win: BrowserWindow, startPath: string): BrowserWindow {
+
+  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+
+  const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
+    ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_PASTE_IMAGE_ENTRY
+    : new URL('../render/win-paste-image/index.html', 'file://' + __dirname).toString();
+
   const winConf: BrowserWindowConstructorOptions = {
     acceptFirstMouse: true,
     width: 700,
@@ -38,7 +57,7 @@ export default function createPasteImageModal (win: BrowserWindow, startPath: st
     fullscreenable: false,
     webPreferences: {
       contextIsolation: true,
-      preload: PASTE_IMAGE_PRELOAD_WEBPACK_ENTRY
+      preload: preloadUrl
     }
   }
 
@@ -47,14 +66,14 @@ export default function createPasteImageModal (win: BrowserWindow, startPath: st
 
   const window = new BrowserWindow(winConf)
 
-  const effectiveUrl = new URL(PASTE_IMAGE_WEBPACK_ENTRY)
+  const effectiveUrl = new URL(pageUrl)
   // Add the initial target path to the search params
   effectiveUrl.searchParams.append('startPath', startPath)
 
   // Load the index.html of the app.
   window.loadURL(effectiveUrl.toString())
     .catch(e => {
-      global.log.error(`Could not load URL ${PASTE_IMAGE_WEBPACK_ENTRY}: ${e.message as string}`, e)
+      global.log.error(`Could not load URL ${pageUrl}: ${e.message as string}`, e)
     })
 
   // EVENT LISTENERS

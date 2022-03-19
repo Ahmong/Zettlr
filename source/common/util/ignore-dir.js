@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-22 02:22
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -11,17 +21,17 @@
  * END HEADER
  */
 
-const path = require('path')
+ const path = require('path')
 
 // Ignored directory patterns
-const ignoreDirs = require('../data.json').ignoreDirs
+import { ignoreDirs } from '../data.json'
 
 /**
 * Returns true, if a directory should be ignored, and false, if not.
 * @param  {String} p The path to the directory. It will be checked against some regexps.
 * @return {Boolean}   True or false, depending on whether or not the dir should be ignored.
 */
-module.exports = function (p) {
+export default function (p) {
   let name = path.basename(p)
   // Directories are ignored on a regexp basis
   for (let re of ignoreDirs) {

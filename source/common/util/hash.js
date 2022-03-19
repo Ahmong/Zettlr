@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 23:48
+ * LastEditTime  : 2022-01-21 14:37
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -42,7 +52,7 @@ module.exports = function (string) {
  * @param  {Number} seed   The seed
  * @return {Number}        The hash of the given string
  */
-module.exports = function (string, seed = 0) {
+export default function (string, seed = 0) {
   let h1 = 0xdeadbeef ^ seed
   let h2 = 0x41c6ce57 ^ seed
   for (let i = 0, ch; i < string.length; i++) {

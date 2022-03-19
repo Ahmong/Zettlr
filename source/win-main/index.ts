@@ -98,6 +98,7 @@ updateColouredTags()
 
 // -----------------------------------------------------------------------------
 
+/* remove citation. mzh 2022-03-18
 function updateCitationDatabase (): void {
   ipcRenderer.invoke('citeproc-provider', { command: 'get-items' })
     .then(cslData => {
@@ -113,6 +114,7 @@ ipcRenderer.on('citeproc-provider', (event, message) => {
 })
 
 updateCitationDatabase()
+*/
 
 // -----------------------------------------------------------------------------
 

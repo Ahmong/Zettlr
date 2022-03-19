@@ -90,7 +90,7 @@
 
 import { trans } from '../../common/i18n-renderer'
 import tippy from 'tippy.js'
-import FileItem from './file-item'
+import FileItem from './file-item.vue'
 import { RecycleScroller } from 'vue-virtual-scroller'
 import objectToArray from '../../common/util/object-to-array'
 import matchQuery from './util/match-query'
@@ -377,7 +377,7 @@ export default {
 
 <style lang="less">
 // Import the necessary styles for the virtual scroller
-@import '~vue-virtual-scroller/dist/vue-virtual-scroller.css';
+@import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 
 body {
   #file-list {

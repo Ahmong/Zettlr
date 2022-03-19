@@ -22,6 +22,7 @@ import { ipcMain, app } from 'electron'
 import broadcastIpcMessage from '../../common/util/broadcast-ipc-message'
 import findLangCandidates, { Candidate } from '../../common/util/find-lang-candidates'
 import enumDictFiles, { DictFileMetadata } from '../../common/util/enum-dict-files'
+import { getStaticDir } from '../../common/util/get-static-dir'
 
 /**
  * This class loads and unloads dictionaries according to the configuration set
@@ -164,8 +165,8 @@ export default class DictionaryProvider extends EventEmitter {
     const fallback: Candidate & DictFileMetadata = {
       tag: 'en-US',
       status: 'fallback',
-      aff: path.join(__dirname, 'dict/en-US/en-US.aff'),
-      dic: path.join(__dirname, 'dict/en-US/en-US.dic')
+      aff: path.join(getStaticDir(__dirname), 'dict/en-US/en-US.aff'),
+      dic: path.join(getStaticDir(__dirname), 'dict/en-US/en-US.dic')
     }
 
     // Now we should have a list of all available dictionaries. Next, we need to

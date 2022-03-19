@@ -1,4 +1,15 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-03-18 23:33
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : '头部注释'
+ * ---
+ * FilePath      : /source/main/modules/window-manager/create-tag-manager-window.ts
+**/
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -17,6 +28,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions
 } from 'electron'
+import path from 'path'
 import attachLogger from './attach-logger'
 import preventNavigation from './prevent-navigation'
 import setWindowChrome from './set-window-chrome'
@@ -29,6 +41,16 @@ import { WindowPosition } from './types'
  * @return  {BrowserWindow}           The loaded print window
  */
 export default function createTagManagerWindow (conf: WindowPosition): BrowserWindow {
+
+  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+
+  const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
+    ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_TAG_MANAGER_ENTRY
+    : new URL('../render/win-tag-manager/index.html', 'file://' + __dirname).toString();
+
+  global.log.info(`preloadUrl=${preloadUrl}`)
+  global.log.info(`pageUrl=${pageUrl}`)
+
   const winConf: BrowserWindowConstructorOptions = {
     acceptFirstMouse: true,
     minWidth: 300,
@@ -42,7 +64,7 @@ export default function createTagManagerWindow (conf: WindowPosition): BrowserWi
     fullscreenable: false,
     webPreferences: {
       contextIsolation: true,
-      preload: TAG_MANAGER_PRELOAD_WEBPACK_ENTRY
+      preload: preloadUrl
     }
   }
 
@@ -52,9 +74,9 @@ export default function createTagManagerWindow (conf: WindowPosition): BrowserWi
   const window = new BrowserWindow(winConf)
 
   // Load the index.html of the app.
-  window.loadURL(TAG_MANAGER_WEBPACK_ENTRY)
+  window.loadURL(pageUrl)
     .catch(e => {
-      global.log.error(`Could not load URL ${TAG_MANAGER_WEBPACK_ENTRY}: ${e.message as string}`, e)
+      global.log.error(`Could not load URL ${pageUrl}: ${e.message as string}`, e)
     })
 
   // EVENT LISTENERS

@@ -1,4 +1,15 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-03-18 22:48
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : '头部注释'
+ * ---
+ * FilePath      : /source/main/modules/window-manager/create-log-window.ts
+**/
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -16,6 +27,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions
 } from 'electron'
+import path from 'path'
 import attachLogger from './attach-logger'
 import preventNavigation from './prevent-navigation'
 import setWindowChrome from './set-window-chrome'
@@ -29,6 +41,13 @@ import { WindowPosition } from './types'
  * @return  {BrowserWindow}         The loaded log window
  */
 export default function createLogWindow (conf: WindowPosition): BrowserWindow {
+
+  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+
+  const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
+    ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_LOG_VIEWER_ENTRY
+    : new URL('../render/win-log-viewer/index.html', 'file://' + __dirname).toString();
+
   const winConf: BrowserWindowConstructorOptions = {
     acceptFirstMouse: true,
     minWidth: 300,
@@ -40,7 +59,7 @@ export default function createLogWindow (conf: WindowPosition): BrowserWindow {
     show: false,
     webPreferences: {
       contextIsolation: true,
-      preload: LOG_VIEWER_PRELOAD_WEBPACK_ENTRY
+      preload: preloadUrl
     }
   }
 
@@ -51,9 +70,9 @@ export default function createLogWindow (conf: WindowPosition): BrowserWindow {
 
   // Load the index.html of the app.
   // The variable LOG_VIEWER_WEBPACK_ENTRY is automatically resolved by electron forge / webpack
-  window.loadURL(LOG_VIEWER_WEBPACK_ENTRY)
+  window.loadURL(pageUrl)
     .catch(e => {
-      global.log.error(`Could not load URL ${LOG_VIEWER_WEBPACK_ENTRY}: ${e.message as string}`, e)
+      global.log.error(`Could not load URL ${pageUrl}: ${e.message as string}`, e)
     })
 
   // EVENT LISTENERS

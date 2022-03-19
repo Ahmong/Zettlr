@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:40
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -19,7 +29,7 @@
  * @param {String} traverse The property over which the recursion takes place
  * @param {Array} arr An optional array to append to
  */
-module.exports = function objectToArray (tree, traverse, arr = []) {
+export default function objectToArray (tree, traverse, arr = []) {
   // Add the current tree
   arr.push(tree)
 

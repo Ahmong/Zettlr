@@ -30,7 +30,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 // Providers
 import AppearanceProvider from './service-providers/appearance-provider'
 import AssetsProvider from './service-providers/assets-provider'
-import CiteprocProvider from './service-providers/citeproc-provider'
+// import CiteprocProvider from './service-providers/citeproc-provider'
 import ConfigProvider from './service-providers/config-provider'
 import CssProvider from './service-providers/css-provider'
 import DictionaryProvider from './service-providers/dictionary-provider'
@@ -49,7 +49,7 @@ import TrayProvider from './service-providers/tray-provider'
 // providers before the app is shut down.
 let appearanceProvider: AppearanceProvider
 let assetsProvider: AssetsProvider
-let citeprocProvider: CiteprocProvider
+// let citeprocProvider: CiteprocProvider
 let configProvider: ConfigProvider
 let cssProvider: CssProvider
 let dictionaryProvider: DictionaryProvider
@@ -115,7 +115,7 @@ export async function bootApplication (): Promise<void> {
   appearanceProvider = new AppearanceProvider()
   assetsProvider = new AssetsProvider()
   await assetsProvider.init()
-  citeprocProvider = new CiteprocProvider()
+  // citeprocProvider = new CiteprocProvider()
   dictionaryProvider = new DictionaryProvider()
   recentDocsProvider = new RecentDocumentsProvider()
   menuProvider = new MenuProvider() // Requires config & recent docs providers
@@ -195,7 +195,7 @@ export async function shutdownApplication (): Promise<void> {
   await safeShutdown(menuProvider)
   await safeShutdown(recentDocsProvider)
   await safeShutdown(dictionaryProvider)
-  await safeShutdown(citeprocProvider)
+  // await safeShutdown(citeprocProvider)
   await safeShutdown(assetsProvider)
   await safeShutdown(appearanceProvider)
   await safeShutdown(configProvider)

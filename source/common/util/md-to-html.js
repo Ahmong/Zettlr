@@ -12,8 +12,8 @@
  * END HEADER
  */
 
-const { Converter } = require('showdown')
-const extractCitations = require('../util/extract-citations').default
+import { Converter } from 'showdown'
+import extractCitations from '../util/extract-citations'
 
 const ipcRenderer = (typeof window !== 'undefined') ? window.ipc : undefined
 
@@ -39,7 +39,7 @@ showdownConverter.setFlavor('github')
  *
  * @return  {string}                              The final HTML string
  */
-module.exports = (markdown) => {
+export default function (markdown) {
   let html = showdownConverter.makeHtml(markdown)
   return html
 }

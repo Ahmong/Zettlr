@@ -1,4 +1,15 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-03-18 22:55
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : '头部注释'
+ * ---
+ * FilePath      : /source/main/modules/window-manager/create-ql-window.ts
+**/
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -16,6 +27,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions
 } from 'electron'
+import path from 'path'
 import { MDFileDescriptor } from '../fsal/types'
 import { WindowPosition } from './types'
 import setWindowChrome from './set-window-chrome'
@@ -30,6 +42,16 @@ import attachLogger from './attach-logger'
  * @return  {BrowserWindow}           The loaded main window
  */
 export default function createQuicklookWindow (file: MDFileDescriptor, conf: WindowPosition): BrowserWindow {
+
+  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+
+  const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
+    ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_QUICKLOOK_ENTRY
+    : new URL('../render/win-quicklook/index.html', 'file://' + __dirname).toString();
+
+  global.log.info(`preloadUrl=${preloadUrl}`)
+  global.log.info(`pageUrl=${pageUrl}`)
+
   const winConf: BrowserWindowConstructorOptions = {
     acceptFirstMouse: true,
     minWidth: 300,
@@ -41,7 +63,7 @@ export default function createQuicklookWindow (file: MDFileDescriptor, conf: Win
     show: false,
     webPreferences: {
       contextIsolation: true,
-      preload: QUICKLOOK_PRELOAD_WEBPACK_ENTRY
+      preload: preloadUrl
     }
   }
 
@@ -50,14 +72,14 @@ export default function createQuicklookWindow (file: MDFileDescriptor, conf: Win
 
   const window = new BrowserWindow(winConf)
 
-  const effectiveUrl = new URL(QUICKLOOK_WEBPACK_ENTRY)
+  const effectiveUrl = new URL(pageUrl)
   effectiveUrl.searchParams.append('file', file.path)
 
   // Load the index.html of the app.
   // The variable QUICKLOOK_WEBPACK_ENTRY is automatically resolved by electron forge / webpack
   window.loadURL(effectiveUrl.toString())
     .catch(e => {
-      global.log.error(`Could not load URL ${QUICKLOOK_WEBPACK_ENTRY}: ${e.message as string}`, e)
+      global.log.error(`Could not load URL ${pageUrl}: ${e.message as string}`, e)
     })
 
   // EVENT LISTENERS

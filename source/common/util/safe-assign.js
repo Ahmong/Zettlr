@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:41
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -54,7 +64,7 @@ function safeAssign (obj, referenceObject) {
  *
  * @return  {any}             The clone with keys from reference and values from object.
  */
-module.exports = function (obj, reference) {
+export default function (obj, reference) {
   // Make sure to clone the reference object, so that users
   // do not have to worry about doing this themselves.
   let clone = JSON.parse(JSON.stringify(reference))

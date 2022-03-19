@@ -13,7 +13,7 @@
  * END HEADER
  */
 
-const { trans } = require('./i18n-main')
+import { trans } from './i18n-main'
 
 class ZettlrValidation {
   /**
@@ -242,4 +242,4 @@ class ZettlrValidation {
   getKey () { return this._option }
 }
 
-module.exports = ZettlrValidation
+export default ZettlrValidation

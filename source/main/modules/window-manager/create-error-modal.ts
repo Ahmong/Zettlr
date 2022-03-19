@@ -17,6 +17,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions
 } from 'electron'
+import path from 'path'
 import attachLogger from './attach-logger'
 import preventNavigation from './prevent-navigation'
 import setWindowChrome from './set-window-chrome'
@@ -28,6 +29,13 @@ import setWindowChrome from './set-window-chrome'
  * @return  {BrowserWindow}           The loaded print window
  */
 export default function createErrorModal (win: BrowserWindow, title: string, message: string, contents?: string): BrowserWindow {
+
+  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+
+  const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
+    ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_ERROR_ENTRY
+    : new URL('../render/win-error/index.html', 'file://' + __dirname).toString();
+
   if (contents === undefined) {
     contents = '<no-contents>'
   }
@@ -45,7 +53,7 @@ export default function createErrorModal (win: BrowserWindow, title: string, mes
     webPreferences: {
       contextIsolation: true,
       additionalArguments: [ title, message, contents ],
-      preload: ERROR_PRELOAD_WEBPACK_ENTRY
+      preload: preloadUrl
     }
   }
 
@@ -54,7 +62,7 @@ export default function createErrorModal (win: BrowserWindow, title: string, mes
 
   const window = new BrowserWindow(winConf)
 
-  const effectiveUrl = new URL(ERROR_WEBPACK_ENTRY)
+  const effectiveUrl = new URL(pageUrl)
   // Add the error message contents to the searchParams
   effectiveUrl.searchParams.append('title', title)
   effectiveUrl.searchParams.append('message', message)
@@ -63,7 +71,7 @@ export default function createErrorModal (win: BrowserWindow, title: string, mes
   // Load the index.html of the app.
   window.loadURL(effectiveUrl.toString())
     .catch(e => {
-      global.log.error(`Could not load URL ${ERROR_WEBPACK_ENTRY}: ${e.message as string}`, e)
+      global.log.error(`Could not load URL ${pageUrl}: ${e.message as string}`, e)
     })
 
   // EVENT LISTENERS

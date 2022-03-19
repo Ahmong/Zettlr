@@ -77,9 +77,9 @@
  */
 
 import ButtonControl from './toolbar-controls/Button.vue'
-import RingControl from './toolbar-controls/RingProgressButton'
+import RingControl from './toolbar-controls/RingProgressButton.vue'
 import ToggleControl from './toolbar-controls/Toggle.vue'
-import ThreeWayToggle from './toolbar-controls/ThreeWayToggle'
+import ThreeWayToggle from './toolbar-controls/ThreeWayToggle.vue'
 import SearchControl from './toolbar-controls/Search.vue'
 import SpacerControl from './toolbar-controls/Spacer.vue'
 import TextControl from './toolbar-controls/Text.vue'

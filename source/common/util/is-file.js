@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2022-01-20 22:01
+ * LastEditTime  : 2022-01-22 02:23
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -11,14 +21,14 @@
  * END HEADER
  */
 
-const fs = require('fs')
+ const fs = require('fs')
 
 /**
  * Checks if a given path is a valid file
  * @param  {String}  p The path to check
  * @return {Boolean}   True, if it is a valid path + file, and false if not
  */
-module.exports = function (p) {
+export default function (p) {
   try {
     let s = fs.lstatSync(p)
     return s.isFile()

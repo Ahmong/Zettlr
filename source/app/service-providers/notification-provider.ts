@@ -17,6 +17,7 @@ import {
   Notification
 } from 'electron'
 import path from 'path'
+import iconUrl from '../../common/img/image-preview.png'
 
 export default class NotificationProvider {
   private readonly _osSupportsNotification: boolean
@@ -25,7 +26,7 @@ export default class NotificationProvider {
   constructor () {
     global.log.verbose('Notification provider booting up ...')
     this._osSupportsNotification = Notification.isSupported()
-    this._icon = nativeImage.createFromPath(path.join(__dirname, '../../common/img/image-preview.png'))
+    this._icon = nativeImage.createFromPath(iconUrl)
     // Inject the global notification methods so that everyone has an easy time
     // broadcasting those messages to all windows involved.
     global.notify = {

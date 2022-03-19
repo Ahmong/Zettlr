@@ -75,9 +75,9 @@
  * END HEADER
  */
 
-import NumberControl from '../common/vue/form/elements/Number'
-import SelectControl from '../common/vue/form/elements/Select'
-import SliderControl from '../common/vue/form/elements/Slider'
+import NumberControl from '../common/vue/form/elements/Number.vue'
+import SelectControl from '../common/vue/form/elements/Select.vue'
+import SliderControl from '../common/vue/form/elements/Slider.vue'
 import { trans } from '../common/i18n-renderer'
 
 export default {

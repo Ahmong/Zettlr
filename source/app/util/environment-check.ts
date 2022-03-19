@@ -101,13 +101,8 @@ export default async function environmentCheck (): Promise<void> {
     global.log.warning('[Application] Pandoc has not been bundled with this release. Falling back to system version instead.')
   }
 
-  // Make sure the PATH property exists
-  if (process.env.PATH === undefined) {
-    process.env.PATH = ''
-  }
-
   // First integrate the additional paths that we need.
-  let tempPATH = process.env.PATH.split(DELIM)
+  let tempPATH = process.env.PATH?.split(DELIM) ?? []
 
   for (let customPath of CUSTOM_PATHS[process.platform]) {
     // Check for both trailing and non-trailing slashes (to not add any

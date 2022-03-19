@@ -37,6 +37,7 @@ import ignoreDir from '../common/util/ignore-dir'
 import ignoreFile from '../common/util/ignore-file'
 import isDir from '../common/util/is-dir'
 import isFile from '../common/util/is-file'
+import { getStaticDir } from '../common/util/get-static-dir'
 import { commands } from './commands'
 
 import { CodeFileDescriptor, CodeFileMeta, DirDescriptor, MDFileDescriptor, MDFileMeta } from './modules/fsal/types'
@@ -697,7 +698,7 @@ export default class Zettlr {
    * This function prepares the app on first start, which includes copying over the tutorial.
    */
   _prepareFirstStart (): void {
-    let tutorialPath = path.join(__dirname, 'tutorial')
+    let tutorialPath = path.join(getStaticDir(__dirname), 'tutorial')
     let targetPath = path.join(app.getPath('documents'), 'Zettlr Tutorial')
     let availableLanguages = fs.readdirSync(tutorialPath, { 'encoding': 'utf8' })
 

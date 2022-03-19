@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-12 22:24
- * LastEditTime  : 2022-01-05 12:03
+ * LastEditTime  : 2022-01-20 01:27
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -17,14 +17,14 @@ import { ZuowenEditor } from './index'
 
 // const generateKeymap = require('./generate-keymap.js')
 
-type ZuowenEditorOptions = Partial<CompositeOptions>
+export type ZuowenEditorOptions = Partial<CompositeOptions>
 
 interface CompositeOptions {
   prosemirror: Partial<DirectEditorProps>
   zettlr: Partial<ZettlrOptions>
 }
 
-interface ZettlrOptions {
+export interface ZettlrOptions {
   // Element rendering
   render: Partial<{
     iframes: boolean
@@ -72,7 +72,7 @@ interface ZettlrOptions {
 /**
  * Returns Editor default options, with sound settings for Zettlr applied.
  */
-const getEditorDefaultOptions = function (): Partial<ZuowenEditorOptions> {
+export const getEditorDefaultOptions = function (): Partial<ZuowenEditorOptions> {
   return {
     /**
      * prosemirror-view OPTIONS
@@ -136,5 +136,3 @@ const getEditorDefaultOptions = function (): Partial<ZuowenEditorOptions> {
     }
   }
 }
-
-export { ZuowenEditorOptions, ZettlrOptions, getEditorDefaultOptions }

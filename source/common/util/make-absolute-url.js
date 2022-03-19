@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-22 01:19
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -12,7 +22,7 @@
  * END HEADER
  */
 
-const protocolRE = require('../regular-expressions').getProtocolRE()
+import { getProtocolRE as protocolRE } from '../regular-expressions'
 const path = window.path
 
 /**
@@ -21,7 +31,7 @@ const path = window.path
 * @param {string} fragment The URL to be converted, either relative or absolute
 * @returns {string} The converted absolute URL with a cachefree-parameter.
 */
-module.exports = function makeAbsoluteURL (base, fragment) {
+export default function makeAbsoluteURL (base, fragment) {
   let urlObject
   try {
     // If it's already a correct URL, we are almost done

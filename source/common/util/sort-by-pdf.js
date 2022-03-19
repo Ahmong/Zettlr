@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:31
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -18,7 +28,7 @@ const pdfRE = /\.pdf$/i
  * @param {String} a The first comparator
  * @param {String} b The second comparator
  */
-module.exports = function (a, b) {
+export default function (a, b) {
   let isAPDF = pdfRE.test(a)
   let isBPDF = pdfRE.test(b)
 

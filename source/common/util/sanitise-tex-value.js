@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:41
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -16,7 +26,7 @@
 * @param  {String} val The input.
 * @return {String}     The sanitised output.
 */
-module.exports = function (val) {
+export default function (val) {
   // First remove those that cannot be rendered
   val = val.replace(/[$^~\\]/g, '')
   // Then escape the rest

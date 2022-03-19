@@ -22,6 +22,15 @@ import {
 import path from 'path'
 import EventEmitter from 'events'
 import { trans } from '../../common/i18n-main'
+import { getStaticDir } from '../../common/util/get-static-dir'
+
+function getAssetsDir (): string {
+  if (app.isPackaged) {
+    return path.join(getStaticDir(__dirname), 'assets')
+  } else {
+    return path.join(__dirname, '../../resources')
+  }
+}
 
 /**
  * This class generates the Tray in the system notification area
@@ -119,21 +128,21 @@ export default class TrayProvider extends EventEmitter {
     }
 
     // Default: 32x32 coloured PNG icon
-    let iconPath = path.join(__dirname, 'assets/icons/png/32x32.png')
+    let iconPath = path.join(getAssetsDir(), 'icons/png/32x32.png')
 
     if (process.platform === 'linux') {
       // On Linux, we're using the appropriate size
       const size = this._calcTrayIconSize()
-      iconPath = path.join(__dirname, `assets/icons/png/${size}x${size}.png`)
+      iconPath = path.join(getAssetsDir(), `icons/png/${size}x${size}.png`)
     } else if (process.platform === 'darwin') {
       // NOTE: We are using an image that ends in "Template.png". This indicates
       // to the Electron runtime that the image should be treated as a "template"
       // and this means it will automatically be displayed white or black
       // depending on the color of the menu bar.
-      iconPath = path.join(__dirname, 'assets/icons/png/22x22_Tray_Template.png')
+      iconPath = path.join(getAssetsDir(), 'icons/png/22x22_Tray_Template.png')
     } else if (process.platform === 'win32') {
       // On Windows, we're using the ICO-file.
-      iconPath = path.join(__dirname, 'assets/icons/icon.ico')
+      iconPath = path.join(getAssetsDir(), 'icons/icon.ico')
     }
 
     this._tray = new Tray(iconPath)

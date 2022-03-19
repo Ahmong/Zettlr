@@ -45,9 +45,9 @@
  * END HEADER
  */
 
-import RadioControl from '../common/vue/form/elements/Radio'
-import SelectControl from '../common/vue/form/elements/Select'
-import Form from '../common/vue/form/Form'
+import RadioControl from '../common/vue/form/elements/Radio.vue'
+import SelectControl from '../common/vue/form/elements/Select.vue'
+import Form from '../common/vue/form/Form.vue'
 
 const ipcRenderer = window.ipc
 

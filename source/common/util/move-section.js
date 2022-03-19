@@ -18,7 +18,7 @@
  * @param  {number} toLine   The target line, above which the section should be inserted.
  * @return {string}    The new file contents with the section moved.
  */
-module.exports = function moveSection (value, fromLine, toLine) {
+export default function moveSection (value, fromLine, toLine) {
   let lines = value.split('\n')
   let sectionStart = fromLine
   let sectionEnd = fromLine

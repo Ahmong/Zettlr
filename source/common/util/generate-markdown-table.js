@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:36
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -17,7 +27,7 @@
 * @param  {Number} cols Number of columns
 * @return {String}      The generated table.
 */
-module.exports = function (rows = 2, cols = 2) {
+export default function (rows = 2, cols = 2) {
   let table = ''
 
   for (let i = 0; i < rows; i++) {

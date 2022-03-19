@@ -20,6 +20,7 @@ import { ExporterOptions, ExporterPlugin, ExporterOutput, ExporterAPI } from './
 import { promises as fs } from 'fs'
 import path from 'path'
 import { trans } from '../../../common/i18n-main'
+import { getStaticDir } from '../../../common/util/get-static-dir'
 import sanitize from 'sanitize-filename'
 
 export const plugin: ExporterPlugin = {
@@ -115,13 +116,13 @@ async function makeRevealJS (
   sourceFile = sourceFile + '.htm' // Make sure it's HTML
 
   // Load the template and the corresponding stylesheet.
-  let revealTpl = path.join(__dirname, './assets/template.revealjs.htm')
+  let revealTpl = path.join(getStaticDir(__dirname), './assets/template.revealjs.htm')
   let tpl = await fs.readFile(revealTpl, { encoding: 'utf8' })
 
-  let revealStyle = path.join(__dirname, `./assets/revealjs-styles/${styleFile}.css`)
+  let revealStyle = path.join(getStaticDir(__dirname), `./assets/revealjs-styles/${styleFile}.css`)
   let style = await fs.readFile(revealStyle, { encoding: 'utf8' })
 
-  let skylightingStyle = path.join(__dirname, `./assets/revealjs-styles/${getSkylightingTheme(styleFile)}`)
+  let skylightingStyle = path.join(getStaticDir(__dirname), `./assets/revealjs-styles/${getSkylightingTheme(styleFile)}`)
   let skylight = await fs.readFile(skylightingStyle, { encoding: 'utf8' })
 
   let title = path.basename(sourceFile)

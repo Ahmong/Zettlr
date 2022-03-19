@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:36
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -20,7 +30,7 @@
  *
  * @return  {string}                The formatted size.
  */
-module.exports = function formatSize (size, short = false) {
+export default function formatSize (size, short = false) {
   if (size < 1024) {
     return `${size} ` + (short ? 'B' : 'Byte')
   } else if (size < 1024 * 1000) {

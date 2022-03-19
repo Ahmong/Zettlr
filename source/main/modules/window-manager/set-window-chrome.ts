@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-23 00:22
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -17,6 +27,7 @@ import {
   BrowserWindowConstructorOptions
 } from 'electron'
 import path from 'path'
+import { getStaticDir } from '../../../common/util/get-static-dir'
 
 /**
  * This function modifies the provided window configuration in-place to match
@@ -51,6 +62,6 @@ export default function setWindowChrome (winConf: BrowserWindowConstructorOption
 
   // Application icon for Linux. Cannot be embedded in the executable.
   if (process.platform === 'linux') {
-    winConf.icon = path.join(__dirname, 'assets/icons/png/128x128.png')
+    winConf.icon = path.join(getStaticDir(__dirname), 'assets/icons/png/128x128.png')
   }
 }

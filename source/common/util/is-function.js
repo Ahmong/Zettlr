@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:38
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -17,7 +27,7 @@
 * @param  {Function} callback The callback variable that should be tested
 * @return {Boolean}        Whether or not the given callback is actually callable.
 */
-module.exports = function (callback) {
+export default function (callback) {
   // We are calling the toString-function of the object prototype, as we can
   // be sure it returns Function, if the callback was actually a function.
   // We could also use the toString-method from any newly created object {},

@@ -76,9 +76,9 @@
 
 import { trans } from '../common/i18n-renderer'
 import WindowChrome from '../common/vue/window/Chrome.vue'
-import ListControl from '../common/vue/form/elements/List'
-import FileControl from '../common/vue/form/elements/File'
-import TextControl from '../common/vue/form/elements/Text'
+import ListControl from '../common/vue/form/elements/List.vue'
+import FileControl from '../common/vue/form/elements/File.vue'
+import TextControl from '../common/vue/form/elements/Text.vue'
 
 const ipcRenderer = window.ipc
 

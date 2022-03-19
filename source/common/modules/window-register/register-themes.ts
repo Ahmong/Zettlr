@@ -43,7 +43,14 @@ interface SystemColour {
  */
 type Theme = 'berlin'|'bielefeld'|'frankfurt'|'karl-marx-stadt'|'bordeaux'
 
+// import themeStyle from '../../less/theme-berlin/theme-main.less'
+import themeStyle from '../../less/theme-bielefeld/theme-main.less'
+// import themeStyle from '../../less/theme-frankfurt/theme-main.less'
+// import themeStyle from '../../less/theme-karl-marx-stadt/theme-main.less'
+// import themeStyle from '../../less/theme-bordeaux/theme-main.less'
+
 /* eslint-disable @typescript-eslint/no-var-requires */
+/*
 const availableThemes: Record<Theme, ThemeLoader> = {
   'berlin': require('../../less/theme-berlin/theme-main.less').default as ThemeLoader,
   'bielefeld': require('../../less/theme-bielefeld/theme-main.less').default as ThemeLoader,
@@ -51,6 +58,7 @@ const availableThemes: Record<Theme, ThemeLoader> = {
   'karl-marx-stadt': require('../../less/theme-karl-marx-stadt/theme-main.less').default as ThemeLoader,
   'bordeaux': require('../../less/theme-bordeaux/theme-main.less').default as ThemeLoader
 }
+*/
 
 /**
  * Global variable which holds the current theme
@@ -68,7 +76,9 @@ export default function registerThemes (): void {
     if (command === 'update') {
       if (payload === 'display.theme') {
         // Switch the theme based on the current configuration value
+        /*
         switchTheme(global.config.get('display.theme'))
+        */
       } else if (payload === 'darkMode') {
         // Switch to light/dark mode based on the configuration variable
         document.body.classList.toggle('dark', global.config.get('darkMode'))
@@ -106,6 +116,7 @@ export default function registerThemes (): void {
  * @param   {Theme}  newTheme  The new theme name
  */
 function switchTheme (newTheme: Theme): void {
+  /*
   let themeToSwitchTo = availableThemes[newTheme]
   if (themeToSwitchTo !== currentTheme) {
     if (currentTheme != null) {
@@ -116,6 +127,7 @@ function switchTheme (newTheme: Theme): void {
     themeToSwitchTo.use()
     currentTheme = themeToSwitchTo
   }
+  */
 }
 
 /**

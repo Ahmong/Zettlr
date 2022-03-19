@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-21 14:35
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -22,7 +32,7 @@
  * @param {object} options The shallow input object
  * @returns {object} The expanded deep object
  */
-module.exports = function (options) {
+export default function (options) {
   let obj = {}
 
   for (let option of Object.keys(options)) {

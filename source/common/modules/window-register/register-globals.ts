@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-23 19:51
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * @ignore
  * BEGIN HEADER
  *
@@ -15,11 +25,13 @@
  * END HEADER
  */
 
+import WindowManager from '../../../main/modules/window-manager'
 import applicationMenuHelper from './application-menu-helper'
 const ipcRenderer = (window as any).ipc as Electron.IpcRenderer
 
 export default function registerGlobals (): void {
   // Register globals
+  window.global = window
 
   // What we are doing here is setting up a special communications channel
   // with the main process to receive config values. This way it is much

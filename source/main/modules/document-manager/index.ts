@@ -387,7 +387,8 @@ export default class DocumentManager extends EventEmitter {
   public set activeFile (descriptor: MDFileDescriptor|CodeFileDescriptor|null) {
     if (descriptor === null && this._activeFile !== null) {
       this._activeFile = null
-      global.citeproc.loadMainDatabase()
+      // remove citation. mzh 2022-03-18
+      // global.citeproc.loadMainDatabase()
       global.config.set('activeFile', null)
       this.emit('update', 'activeFile')
     } else if (descriptor !== null && descriptor.path !== this.activeFile?.path) {
@@ -396,7 +397,9 @@ export default class DocumentManager extends EventEmitter {
       if (file !== undefined && this._loadedDocuments.includes(file)) {
         // Make sure the main database is set before, and only load an optional
         // bibliography file afterwards.
-        global.citeproc.loadMainDatabase()
+        // remove citation. mzh 2022-03-18
+        // global.citeproc.loadMainDatabase()
+
         // Make sure before selecting the file to load a potential file-specific
         // database. This can be defined (as for Pandoc) either directly in the
         // frontmatter OR in the metadata.
@@ -406,6 +409,7 @@ export default class DocumentManager extends EventEmitter {
             // Convert to absolute path if necessary
             dbFile = path.resolve(file.dir, dbFile)
           }
+          /* remove citation. mzh 2022-03-18
           // We have a bibliography
           global.citeproc.loadAndSelect(dbFile)
             .finally(() => {
@@ -416,6 +420,7 @@ export default class DocumentManager extends EventEmitter {
               this.emit('update', 'activeFile')
             })
             .catch(err => global.log.error(`[DocumentManager] Could not load file-specific database ${dbFile}`, err))
+          */
         } else {
           this._activeFile = file
           global.recentDocs.add(file.path)
@@ -621,9 +626,11 @@ export default class DocumentManager extends EventEmitter {
         // Convert to absolute path if necessary
         dbFile = path.resolve(src.dir, dbFile)
       }
+      /* remove citation. mzh 2022-03-18
       // We have a bibliography
       global.citeproc.loadAndSelect(dbFile)
         .catch(err => global.log.error(`[FSAL] Could not load file-specific database ${dbFile}`, err))
+      */
     }
   }
 }

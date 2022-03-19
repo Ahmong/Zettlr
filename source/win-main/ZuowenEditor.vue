@@ -1,7 +1,7 @@
 <!--
  * Author        : Ahmong
  * Date          : 2021-12-12 20:00
- * LastEditTime  : 2021-12-20 01:10
+ * LastEditTime  : 2022-03-18 17:48
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -79,7 +79,8 @@
 </template>
 
 <script>
-export { default } from './ZuowenEditorScript'
+import ZuowenEditor from './ZuowenEditorScript'
+export default ZuowenEditor
 </script>
 
 <style lang="less">

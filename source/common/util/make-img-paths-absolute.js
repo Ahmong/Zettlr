@@ -1,4 +1,14 @@
 /**
+ * Author        : Ahmong
+ * Date          : 2021-12-10 21:46
+ * LastEditTime  : 2022-01-22 01:19
+ * LastEditors   : Ahmong
+ * License       : GNU GPL v3
+ * ---
+ * Description   : 
+ * ---
+ */
+/**
  * BEGIN HEADER
  *
  * Contains:        Utility function
@@ -12,7 +22,7 @@
  */
 
 let path = (typeof window !== 'undefined') ? window.path : import('path').then(mod => { path = mod })
-const { getImageRE } = require('../regular-expressions')
+import { getImageRE } from '../regular-expressions'
 
 /**
  * This function takes a Markdown string and replaces all occurrences of images
@@ -21,7 +31,7 @@ const { getImageRE } = require('../regular-expressions')
  * @param  {String} mdstring The string to be altered.
  * @return {String}          The altered mdstring value.
  */
-module.exports = function (basePath, mdstring) {
+export default function (basePath, mdstring) {
   let imgRE = getImageRE(true) // We need the multiline version
   return mdstring.replace(imgRE, (match, alt, targetAndTitle, title, pandocAttrs, offset, string) => {
     // We'll make use of path for file system URIs, and the URL() constructor

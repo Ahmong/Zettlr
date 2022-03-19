@@ -139,9 +139,9 @@
  * END HEADER
  */
 
-import Checkbox from './Checkbox'
-import TextControl from './Text'
-import NumberControl from './Number'
+import Checkbox from './Checkbox.vue'
+import TextControl from './Text.vue'
+import NumberControl from './Number.vue'
 
 import { trans } from '../../../i18n-renderer'
 

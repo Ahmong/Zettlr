@@ -124,7 +124,7 @@
 
 import { trans } from '../common/i18n-renderer'
 import { ClarityIcons } from '@clr/icons'
-import TabBar from '../common/vue/TabBar'
+import TabBar from '../common/vue/TabBar.vue'
 
 const path = window.path
 const ipcRenderer = window.ipc
@@ -210,9 +210,11 @@ export default {
     tableOfContents: function () {
       return this.$store.state.tableOfContents
     },
+    /* remove citation. mzh 2022-03-18
     citationKeys: function () {
       return this.$store.state.citationKeys
     },
+    */
     referenceHTML: function () {
       if (this.bibContents === undefined || this.bibContents[1].length === 0) {
         return `<p>${trans('gui.citeproc.references_none')}</p>`
@@ -230,10 +232,12 @@ export default {
     }
   },
   watch: {
+    /* remove citation. mzh 2022-03-18
     citationKeys: function () {
       // Reload the bibliography
       this.updateReferences()
     },
+    */
     activeFile: function () {
       this.updateRelatedFiles()
     },
@@ -257,14 +261,17 @@ export default {
       }
     })
 
+    /* remove citation. mzh 2022-03-18
     try {
       this.updateReferences()
     } catch (err) {
       console.error(err)
     }
+    */
     this.updateRelatedFiles()
   },
   methods: {
+    /* remove citation. mzh 2022-03-18
     updateReferences: function () {
       // NOTE We're manually cloning the citationKeys array, since Proxies
       // cannot be cloned to be sent across the IPC bridge
@@ -277,6 +284,7 @@ export default {
         })
         .catch(err => console.error(err))
     },
+    */
     updateRelatedFiles: function () {
       this.relatedFiles = []
       if (this.activeFile === null || this.activeFile.type !== 'file') {
