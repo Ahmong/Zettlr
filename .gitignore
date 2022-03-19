@@ -49,3 +49,8 @@ eslint_report.htm
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+### vite & rollup
+# Ignore build and dev pack dirs
+dist/*
+!dist/package.json
