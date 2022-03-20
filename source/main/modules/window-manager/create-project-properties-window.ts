@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-10 21:46
- * LastEditTime  : 2022-03-18 22:53
+ * LastEditTime  : 2022-03-21 00:21
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -43,12 +43,11 @@ import { WindowPosition } from './types'
  * @return  {BrowserWindow}            The loaded print window
  */
 export default function createProjectPropertiesWindow (conf: WindowPosition, dirPath: string): BrowserWindow {
-
-  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+  const preloadUrl = path.resolve(__dirname, '../preload/preload.cjs')
 
   const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
     ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_PROJECT_PROPERTIES_ENTRY
-    : new URL('../render/win-project-properties-window/index.html', 'file://' + __dirname).toString();
+    : new URL('../render/win-project-properties-index.html', 'file://' + __filename).toString();
 
   global.log.info(`preloadUrl=${preloadUrl}`)
   global.log.info(`pageUrl=${pageUrl}`)

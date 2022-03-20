@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2021-12-10 21:46
- * LastEditTime  : 2022-03-19 18:41
+ * LastEditTime  : 2022-03-21 00:15
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -42,11 +42,11 @@ import { WindowPosition } from './types'
  */
 export default function createAboutWindow (conf: WindowPosition): BrowserWindow {
 
-  const preloadUrl = path.join(__dirname, '../preload/preload.cjs')
+  const preloadUrl = path.resolve(__dirname, '../preload/preload.cjs')
 
   const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
     ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_ABOUT_ENTRY
-    : new URL('../render/win-about/index.html', 'file://' + __dirname).toString();
+    : new URL('../render/win-about-index.html', 'file://' + __filename).toString();
 
   const winConf: BrowserWindowConstructorOptions = {
     acceptFirstMouse: true,

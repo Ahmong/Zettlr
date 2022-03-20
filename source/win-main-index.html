@@ -5,10 +5,12 @@
     <!-- Allow script execution only from the app itself or inline stuff to
          supress the Electron default warning (and also make it safer here) -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
-    <title>Updater</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" />
+    <title>Zettlr</title>
 </head>
 <body>
-  <div id="app"></div>
-  <script src="./index.ts" type="module"></script>
+  <div id="app" role="application"></div>
+  <script src="./win-main/index.ts" type="module"></script>
 </body>
 </html>

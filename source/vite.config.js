@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2022-01-21 14:15
- * LastEditTime  : 2022-03-20 01:31
+ * LastEditTime  : 2022-03-20 02:36
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -22,17 +22,17 @@ const PACKAGE_ROOT = __dirname + '/..';
  * @see https://vitejs.dev/config/
  */
 const config = {
-  mode: process.env.MODE,
+  mode: process.env.mode,
   root: PACKAGE_ROOT,
   resolve: {
     alias: {
-      // '/@/': join(PACKAGE_ROOT, 'src') + '/',
+      // '/@/': join(PACKAGE_ROOT, 'source') + '/',
     },
     conditions: [
       'import',
       'module',
       'default',
-      process.env.MODE,
+      process.env.mode,
     ],
   },
   plugins: [
@@ -43,9 +43,9 @@ const config = {
   build: {
     sourcemap: true,
     target: `node${node}`,
-    outDir: (process.env.MODE === 'development') ? 'out/dev/main' : 'dist/main',
+    outDir: (process.env.mode === 'development') ? 'out/dev/main' : 'dist/main',
     assetsDir: '.',
-    minify: process.env.MODE !== 'development',
+    minify: process.env.mode !== 'development',
     lib: {
       entry: 'source/main.ts',
       formats: ['cjs'],

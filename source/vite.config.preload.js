@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2022-01-21 15:48
- * LastEditTime  : 2022-03-20 01:31
+ * LastEditTime  : 2022-03-20 02:35
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -19,7 +19,7 @@ const PACKAGE_ROOT = __dirname + '/..';
  * @see https://vitejs.dev/config/
  */
 const config = {
-  mode: process.env.MODE,
+  mode: process.env.mode,
   root: PACKAGE_ROOT,
   envDir: PACKAGE_ROOT,
   resolve: {
@@ -31,9 +31,9 @@ const config = {
     sourcemap: 'inline',
     target: `chrome${chrome}`,
     // outDir: 'dist/preload',
-    outDir: (process.env.MODE === 'development') ? 'out/dev/preload' : 'dist/preload',
+    outDir: (process.env.mode === 'development') ? 'out/dev/preload' : 'dist/preload',
     assetsDir: 'assets',
-    minify: process.env.MODE !== 'development',
+    minify: process.env.mode !== 'development',
     lib: {
       entry: 'source/preload/index.ts',
       formats: ['cjs'],

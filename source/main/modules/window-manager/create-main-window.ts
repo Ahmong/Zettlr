@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2022-01-21 12:52
- * LastEditTime  : 2022-03-19 18:49
+ * LastEditTime  : 2022-03-20 15:00
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -47,11 +47,7 @@ export default function createMainWindow (conf: WindowPosition): BrowserWindow {
 
   const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
     ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_MAIN_ENTRY
-    : new URL('../render/win-main/index.html', 'file://' + __filename).toString();
-
-  global.log.info('__dirname=' + __dirname)
-  global.log.info(`preloadUrl=${preloadUrl}`)
-  global.log.info(`pageUrl=${pageUrl}`)
+    : new URL('../render/win-main-index.html', 'file://' + __filename).toString();
 
   const winConf: BrowserWindowConstructorOptions = {
     width: conf.width,
@@ -93,7 +89,7 @@ export default function createMainWindow (conf: WindowPosition): BrowserWindow {
       window.maximize()
     }
 
-    if (import.meta.env.DEV) {
+    if ((import.meta as any).env.DEV) {
       window?.webContents.openDevTools();
     }
   })

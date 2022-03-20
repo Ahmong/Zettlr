@@ -1,7 +1,7 @@
 /**
  * Author        : Ahmong
  * Date          : 2022-01-21 15:53
- * LastEditTime  : 2022-03-20 01:16
+ * LastEditTime  : 2022-03-20 14:54
  * LastEditors   : Ahmong
  * License       : GNU GPL v3
  * ---
@@ -24,14 +24,15 @@ const PACKAGE_ROOT = __dirname;
  * @see https://vitejs.dev/config/
  */
 const config = {
-  mode: process.env.MODE,
-  // root: PACKAGE_ROOT,
-  root: join(PACKAGE_ROOT, '..'),
+  mode: process.env.mode,
+  root: PACKAGE_ROOT,
+  // root: join(PACKAGE_ROOT, '..'),
   envDir: join(PACKAGE_ROOT, '..'),
   envPrefix: 'VITE_',
   resolve: {
     alias: {
-      // '/@/': join(PACKAGE_ROOT, 'src') + '/',
+      // '/@/': join(PACKAGE_ROOT, '') + '/',
+      '/@/': join(PACKAGE_ROOT, '') + '/',
     },
   },
   base: '',
@@ -56,46 +57,50 @@ const config = {
   ],
   server: {
     fs: {
-      strict: false,
+      strict: true,
     },
   },
   build: {
-    sourcemap: process.env.MODE !== 'production',
+    sourcemap: process.env.mode !== 'production',
     target: `chrome${chrome}`,
     outDir: '../dist/render',
     assetsDir: 'assets',
-    minify: process.env.MODE !== 'development',
+    minify: process.env.mode !== 'development',
     rollupOptions: {
       input: {
-        'win-main': resolve(PACKAGE_ROOT, 'win-main/index.html'),
-        'win-about': resolve(PACKAGE_ROOT, 'win-about/index.html'),
-        'win-assets': resolve(PACKAGE_ROOT, 'win-assets/index.html'),
-        'win-error': resolve(PACKAGE_ROOT, 'win-error/index.html'),
-        'win-log-viewer': resolve(PACKAGE_ROOT, 'win-log-viewer/index.html'),
-        'win-paste-image': resolve(PACKAGE_ROOT, 'win-paste-image/index.html'),
-        'win-preferences': resolve(PACKAGE_ROOT, 'win-preferences/index.html'),
-        'win-print': resolve(PACKAGE_ROOT, 'win-print/index.html'),
-        'win-project-properties': resolve(PACKAGE_ROOT, 'win-project-properties/index.html'),
-        'win-quicklook': resolve(PACKAGE_ROOT, 'win-quicklook/index.html'),
-        'win-stats': resolve(PACKAGE_ROOT, 'win-stats/index.html'),
-        'win-tag-manager': resolve(PACKAGE_ROOT, 'win-tag-manager/index.html'),
-        'win-update': resolve(PACKAGE_ROOT, 'win-update/index.html'),
+        'win-main': 'win-main-index.html',
+        'win-about': 'win-about-index.html',
+        'win-assets': 'win-assets-index.html',
+        'win-error': 'win-error-index.html',
+        'win-log-viewer': 'win-log-viewer-index.html',
+        'win-paste-image': 'win-paste-image-index.html',
+        'win-preferences': 'win-preferences-index.html',
+        'win-print': 'win-print-index.html',
+        'win-project-properties': 'win-project-properties-index.html',
+        'win-quicklook': 'win-quicklook-index.html',
+        'win-stats': 'win-stats-index.html',
+        'win-tag-manager': 'win-tag-manager-index.html',
+        'win-update': 'win-update-index.html',
       },
       output: {
         dir: 'dist/render',
-        entryFileNames: '[name].cjs',
+        entryFileNames: '[name].js',
       },
+      /*
       external: [
         ...builtinModules.flatMap(p => [p, `node:${p}`]),
       ],
+      */
     },
     emptyOutDir: true,
     brotliSize: true,
   },
   optimizeDeps: {
+    /*
     exclude: [
       'fsevents',
     ]
+    */
   },
   test: {
     environment: 'happy-dom',

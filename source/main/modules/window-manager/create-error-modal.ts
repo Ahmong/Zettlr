@@ -30,11 +30,11 @@ import setWindowChrome from './set-window-chrome'
  */
 export default function createErrorModal (win: BrowserWindow, title: string, message: string, contents?: string): BrowserWindow {
 
-  const preloadUrl = path.join(process.cwd(), (import.meta as any).env.VITE_WIN_PRELOAD_ENTRY)
+  const preloadUrl = path.resolve(__dirname, '../preload/preload.cjs')
 
   const pageUrl = (import.meta as any).env.DEV && (import.meta as any).env.VITE_DEV_SERVER_URL !== undefined
     ? (import.meta as any).env.VITE_DEV_SERVER_URL + (import.meta as any).env.VITE_WIN_ERROR_ENTRY
-    : new URL('../render/win-error/index.html', 'file://' + __dirname).toString();
+    : new URL('../render/win-error-index.html', 'file://' + __filename).toString();
 
   if (contents === undefined) {
     contents = '<no-contents>'
